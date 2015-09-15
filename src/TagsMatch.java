@@ -16,6 +16,7 @@ import java.util.LinkedList;
 
 public class TagsMatch {
 	static String[] fileList;
+	public static final String projectFolderPath = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\";
 	public static void search(String sentence) throws Exception{
 		String[] keywords = sentence.split(" +");
 		keywords = stemmedKeywords(keywords);
@@ -44,7 +45,7 @@ public class TagsMatch {
 		checkCategory(finalResults);
 	}
 	public static void checkCategory(String[] filenames){
-		String trainFolder = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\ImageData\\train\\data\\";
+		String trainFolder = projectFolderPath+"ImageData\\train\\data\\";
 		File file = new File(trainFolder);
 		String[] directories = file.list(new FilenameFilter() {
 			  @Override
@@ -80,7 +81,7 @@ public class TagsMatch {
 		buildLinkedList();
 	}
     public static void separateTerms() throws Exception{
-    	String trainTagsFile = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\ImageData\\train\\train_tags.txt";
+    	String trainTagsFile = projectFolderPath+"ImageData\\train\\train_tags.txt";
     	FileInputStream fistream = new FileInputStream(trainTagsFile);
     	BufferedReader br = new BufferedReader(new InputStreamReader(fistream));
     	
@@ -178,6 +179,6 @@ public class TagsMatch {
     }
     public static void main(String[] args) throws Exception{
     	index();
-    	search("happy");
+    	search("dog");
     }
 }
