@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.InputStreamReader;
@@ -11,7 +10,13 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 
 public class TagsMatch {
@@ -20,29 +25,70 @@ public class TagsMatch {
 	public static void search(String sentence) throws Exception{
 		String[] keywords = sentence.split(" +");
 		keywords = stemmedKeywords(keywords);
+		int N = fileList.length;
 		
-		ArrayList<Integer> searchResults = new ArrayList<Integer>();
+		HashMap<Integer, Float> searchResults = new HashMap<Integer, Float>();//doc-score
 		
 		FileInputStream fistream = new FileInputStream("index.txt");
     	BufferedReader br = new BufferedReader(new InputStreamReader(fistream));
     	
     	String strLine;
+    	
 		for (int i = 0; i < keywords.length; i ++){
+			fistream.getChannel().position(0);//for each keyword, read from the beginning
+			br = new BufferedReader(new InputStreamReader(fistream));
 			while((strLine = br.readLine()) != null){
-				String[] terms = strLine.split(" ");
-				if (terms[0].equals(keywords[i])) { // if it finds a match
+				String term = strLine.split(" ")[0];
+				if (term.equals(keywords[i])) { // if it finds a match
 					String[] docs = strLine.split("->")[1].split(" ");
-					searchResults = mergeResult(docs,searchResults);//save the doc numbers
+					//assume tf=1 for all keyword in each file, use idf to represent the weight
+					int df = Integer.parseInt(strLine.split("->")[0].split(" ")[1]);
+					float idf = (float) (Math.log((float)N/df)+1);
+					searchResults = mergeResult(docs,searchResults,idf);//save the doc numbers and add idf
 					break; // stop reading and check the next query word
 				}
 			}
 		}
-		String[] finalResults = new String[searchResults.size()];
-		for (int i = 0; i < searchResults.size(); i ++){
-			//System.out.println(fileList[searchResults.get(i)]+" ");
-			finalResults[i] = fileList[searchResults.get(i)];
+		br.close();
+		ArrayList<Integer> rankedDocs = getRankedDocs(searchResults); //rank docs by its idf
+		
+		String[] resultFiles = new String[rankedDocs.size()];
+		for (int i = 0; i < rankedDocs.size(); i ++){
+			resultFiles[i] = fileList[rankedDocs.get(i)];//get file names, doc num starts from 0
 		}
-		checkCategory(finalResults);
+		checkCategory(resultFiles);
+	}
+	public static <K, V extends Comparable<? super V>> Map<K, V> crunchifySortMap(final Map<K, V> mapToSort) {
+		List<Map.Entry<K, V>> entries = new ArrayList<Map.Entry<K, V>>(mapToSort.size());
+ 
+		entries.addAll(mapToSort.entrySet());
+ 
+		Collections.sort(entries, new Comparator<Map.Entry<K, V>>() {
+			@Override
+			public int compare(final Map.Entry<K, V> entry1, final Map.Entry<K, V> entry2) {
+				return entry1.getValue().compareTo(entry2.getValue());
+			}
+		});
+ 
+		Map<K, V> sortedCrunchifyMap = new LinkedHashMap<K, V>();
+		for (Map.Entry<K, V> entry : entries) {
+			sortedCrunchifyMap.put(entry.getKey(), entry.getValue());
+		}
+		return sortedCrunchifyMap;
+	}
+	public static ArrayList<Integer> getRankedDocs(HashMap<Integer, Float> searchResults){
+		ArrayList<Integer> rankedDocs = new ArrayList<Integer>();
+        Map<Integer, Float> sortedCrunchifyMapValue = new HashMap<Integer, Float>();
+		
+		// Sort Map on value by calling crunchifySortMap()
+		sortedCrunchifyMapValue = crunchifySortMap(searchResults);
+		for (Entry<Integer, Float> entry : sortedCrunchifyMapValue.entrySet()) {
+			rankedDocs.add(entry.getKey());
+		}
+		
+	    Collections.reverse(rankedDocs); //decreasing order
+	    return rankedDocs;
+	    
 	}
 	public static void checkCategory(String[] filenames){
 		String trainFolder = projectFolderPath+"ImageData\\train\\data\\";
@@ -53,7 +99,6 @@ public class TagsMatch {
 			    return new File(current, name).isDirectory();
 			  }
 	    });
-		//System.out.println(Arrays.toString(directories));
 		for (int i = 0; i < filenames.length; i ++){
 			for (int j = 0; j < directories.length; j ++){
 			    boolean exist = new File(trainFolder+directories[j], filenames[i]).exists();
@@ -66,11 +111,14 @@ public class TagsMatch {
 	public static String[] stemmedKeywords(String[] keywords){
 		return stemTerms(keywords);
 	}
-	public static ArrayList<Integer> mergeResult(String[] docs, ArrayList<Integer> result){
+	public static HashMap<Integer, Float> mergeResult(String[] docs, HashMap<Integer, Float> result, float idf){
 		for (int i = 0; i < docs.length; i ++) {
 			int num = Integer.parseInt(docs[i]);
-			if (!result.contains(num)){
-				result.add(num);
+			if (!result.containsKey(num)){
+				result.put(num, idf);
+			}
+			else {
+				result.replace(num, result.get(num)+idf);
 			}
 		}
 		return result;
@@ -179,6 +227,6 @@ public class TagsMatch {
     }
     public static void main(String[] args) throws Exception{
     	index();
-    	search("dog");
+    	search("car digital canon turkey lens");
     }
 }
