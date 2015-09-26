@@ -1,4 +1,3 @@
-
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -20,6 +19,7 @@ public class ImageSearch extends JFrame
     //ColorHist colorhist = new ColorHist();
 	VisualConceptMatch vc = new VisualConceptMatch();
     JButton openButton, searchButton;
+    JCheckBox CHButton, VWButton, VCButton, TextButton;
 	BufferedImage bufferedimage;
     
 	JLabel [] imageLabels = new JLabel [ resultsize ];
@@ -35,10 +35,28 @@ public class ImageSearch extends JFrame
         
         searchButton = new JButton("Search");
         searchButton.addActionListener(this);
+        
+        CHButton = new JCheckBox("Color Histogram Match");
+        CHButton.addActionListener(this);
+        
+        VWButton = new JCheckBox("Visual Keywords Match");
+        VWButton.addActionListener(this);
+        
+        VCButton = new JCheckBox("Visual Concept Match");
+        VCButton.addActionListener(this);
+        
+        TextButton = new JCheckBox("Text Tags Match");
+        TextButton.addActionListener(this);
+
 
         //For layout purposes, put the buttons in a separate panel
-        JPanel buttonPanel = new JPanel(); //use FlowLayout
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); //use FlowLayout
         buttonPanel.add(openButton);
+        JPanel checkBoxPanel = new JPanel(new GridLayout(0,1));
+        checkBoxPanel.add(CHButton);
+        checkBoxPanel.add(VWButton);
+        checkBoxPanel.add(VCButton);
+        checkBoxPanel.add(TextButton);
         buttonPanel.add(searchButton);
         
 		
@@ -54,8 +72,9 @@ public class ImageSearch extends JFrame
 		setSize(800,900);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        contentPane.add(buttonPanel, BorderLayout.PAGE_START);
+        contentPane.add(buttonPanel,BorderLayout.PAGE_END);
         contentPane.add(imagePanel, BorderLayout.CENTER);
+        contentPane.add(checkBoxPanel,BorderLayout.NORTH);
         
         contentPane.setVisible(true);
 		setVisible(true);
