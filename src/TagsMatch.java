@@ -1,3 +1,4 @@
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,23 +19,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.imageio.ImageIO;
+
 
 public class TagsMatch {
 	static String[] fileList;
 	public static final String projectFolderPath = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\";
-	public static void search(String sentence) throws Exception{
+	public BufferedImage[] search(String datasetpath, String queryImagePath, int resultsize) throws Exception{
+		
+		index();
+		
+		//go into the test folder and read test_tags.txt
+		FileInputStream fistream = new FileInputStream(queryImagePath.substring(0, queryImagePath.indexOf("data"))+"test_tags.txt");
+    	BufferedReader br = new BufferedReader(new InputStreamReader(fistream));
+    	String strLine;
+    	String sentence = null;
+    	//if the file doesn't contain tags for query image, just return
+    	//if it contains, then use the tags as keywords
+    	while((strLine = br.readLine()) != null){
+    		String filename = strLine.split(" ")[0];
+    		if (queryImagePath.contains(filename)){
+    			sentence = strLine;
+    		}
+    	}  
+    	br.close();
+    	if (sentence == null){
+    		return null;
+    	}
 		String[] keywords = sentence.split(" +");
 		keywords = stemmedKeywords(keywords);
-		int N = fileList.length;
+		int N = fileList.length;		
 		
 		HashMap<Integer, Float> searchResults = new HashMap<Integer, Float>();//doc-score
 		
-		FileInputStream fistream = new FileInputStream("index.txt");
-    	BufferedReader br = new BufferedReader(new InputStreamReader(fistream));
+		fistream = new FileInputStream("index.txt");
+    	br = new BufferedReader(new InputStreamReader(fistream));
     	
-    	String strLine;
-    	
-		for (int i = 0; i < keywords.length; i ++){
+		for (int i = 1; i < keywords.length; i ++){
 			fistream.getChannel().position(0);//for each keyword, read from the beginning
 			br = new BufferedReader(new InputStreamReader(fistream));
 			while((strLine = br.readLine()) != null){
@@ -56,7 +77,14 @@ public class TagsMatch {
 		for (int i = 0; i < rankedDocs.size(); i ++){
 			resultFiles[i] = fileList[rankedDocs.get(i)];//get file names, doc num starts from 0
 		}
-		checkCategory(resultFiles);
+		resultFiles = checkCategory(resultFiles);
+		
+		BufferedImage[] images = new BufferedImage[resultsize];
+		for (int i = 0; i < resultsize; i ++){
+			System.out.println(resultFiles[i]);
+			images[i] = ImageIO.read(new File(resultFiles[i]));
+		}
+		return images;
 	}
 	public static <K, V extends Comparable<? super V>> Map<K, V> crunchifySortMap(final Map<K, V> mapToSort) {
 		List<Map.Entry<K, V>> entries = new ArrayList<Map.Entry<K, V>>(mapToSort.size());
@@ -90,7 +118,8 @@ public class TagsMatch {
 	    return rankedDocs;
 	    
 	}
-	public static void checkCategory(String[] filenames){
+	public static String[] checkCategory(String[] filenames){
+		String[] fullPathName = new String[filenames.length];
 		String trainFolder = projectFolderPath+"ImageData\\train\\data\\";
 		File file = new File(trainFolder);
 		String[] directories = file.list(new FilenameFilter() {
@@ -103,10 +132,11 @@ public class TagsMatch {
 			for (int j = 0; j < directories.length; j ++){
 			    boolean exist = new File(trainFolder+directories[j], filenames[i]).exists();
 			    if (exist) {
-				    System.out.println(filenames[i]+" : "+directories[j]);
+			    	fullPathName[i]=trainFolder+directories[j]+"\\"+filenames[i];
 			    }
 		    }
-		}		
+		}
+		return fullPathName;
 	}
 	public static String[] stemmedKeywords(String[] keywords){
 		return stemTerms(keywords);
@@ -227,6 +257,6 @@ public class TagsMatch {
     }
     public static void main(String[] args) throws Exception{
     	index();
-    	search("car digital canon turkey lens");
+    	//search("car digital canon turkey lens");
     }
 }

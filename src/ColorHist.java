@@ -1,7 +1,9 @@
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -12,34 +14,60 @@ public class ColorHist {
 	public BufferedImage[] search(String datasetpath, BufferedImage bufferedimage, int resultsize) throws IOException{
     	double[] hist = getHist(bufferedimage);
     	
-    	File dir = new File(datasetpath);  //path of the dataset
-		File [] files = dir.listFiles();
+    	ArrayList<File> datasetFiles = new ArrayList<File>();
+    	File dir = new File(datasetpath); //path of the dataset
+		String[] directories = dir.list(new FilenameFilter() {//all the subfolders
+			  @Override
+			  public boolean accept(File current, String name) {
+			    return new File(current, name).isDirectory();
+			  }
+	    });
+		for (int i = 0; i < directories.length; i ++){ //all the image files in each subfolders
+			File folder = new File(datasetpath+directories[i]);
+			File[] listOfFiles = folder.listFiles(); 
+			 
+			for (int j = 0; j < listOfFiles.length; j ++) {
+				if (listOfFiles[j].getName().endsWith(".jpg")){
+					File file = new File(listOfFiles[j].getAbsolutePath());
+					datasetFiles.add(file);
+				}
+			}
+		}		
+	
+		File [] files = new File[datasetFiles.size()];
+		datasetFiles.toArray(files);
 		double[] sims = new double [files.length];
 		int [] indexes = new int [files.length];
 		
 		
 		/*ranking the search results*/
 		for (int count=0; count < files.length;count++){
-			BufferedImage i = ImageIO.read(files[count]);
-			double[] h = getHist(i);
-			double sim = computeSimilarity (hist, h);
-			if (count == 0){
-				sims[count] = sim;
-				indexes [count] = count;
-			}
-			else {
-				int index;
-				for (index =0; index < count; index ++){
-					if (sim > sims[index])
-						break;
+			System.out.println(files[count]);
+			try{
+				BufferedImage i = ImageIO.read(files[count]);
+				double[] h = getHist(i);
+				double sim = computeSimilarity (hist, h);
+				if (count == 0){
+					sims[count] = sim;
+					indexes [count] = count;
 				}
-				for (int j = count - 1; j > index - 1; j--){
-					sims [j+1] = sims [j];
-					indexes [j+1] = indexes[j];
+				else {
+					int index;
+					for (index =0; index < count; index ++){
+						if (sim > sims[index])
+							break;
+					}
+					for (int j = count - 1; j > index - 1; j--){
+						sims [j+1] = sims [j];
+						indexes [j+1] = indexes[j];
+					}
+					sims[index] = sim;
+					indexes[index] = count;
 				}
-				sims[index] = sim;
-				indexes[index] = count;
 			}
+			catch(Exception e){
+				System.out.println(e.getMessage());
+			}	
 		}
 		    	
     	BufferedImage[] imgs = new BufferedImage[resultsize];
