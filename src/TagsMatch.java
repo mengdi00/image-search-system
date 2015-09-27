@@ -3,6 +3,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.InputStreamReader;
@@ -25,7 +26,7 @@ import javax.imageio.ImageIO;
 public class TagsMatch {
 	static String[] fileList;
 	static HashMap<Integer, Double> searchResults;
-	public static final String projectFolderPath = "C:\\Users\\richada\\Desktop\\CS2108\\Assignment1\\";
+	public static final String projectFolderPath = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\";
 	
 	public HashMap<Integer, Double> search(String datasetpath, String queryImagePath, int resultsize) throws Exception{
 		//index();
@@ -76,10 +77,11 @@ public class TagsMatch {
 				String term = strLine.split(" ")[0];
 				if (term.equals(keywords[i])) { // if it finds a match
 					String[] docs = strLine.split("->")[1].split(" ");
+					int[] docnum = convertDocsToGlobal(docs);
 					//assume tf=1 for all keyword in each file, use idf to represent the weight
 					int df = Integer.parseInt(strLine.split("->")[0].split(" ")[1]);
 					double idf = (double) (Math.log((double)N/df)+1);
-					searchResults = mergeResult(docs,searchResults,idf);//save the doc numbers and add idf
+					searchResults = mergeResult(docnum,searchResults,idf);//save the doc numbers and add idf
 					break; // stop reading and check the next query word
 				}
 			}
@@ -116,7 +118,30 @@ public class TagsMatch {
 //		}
 //		return images;
 	}
-	
+	public int[] convertDocsToGlobal(String[] docs) throws Exception{
+		int[] result = new int[docs.length];
+		FileInputStream fistream;
+		BufferedReader br;
+		for(int i = 0; i <docs.length; i ++){
+			int dno = Integer.parseInt(docs[i]);
+			String filepath = fileList[dno];
+			String allImageFileList = projectFolderPath+"FeatureExtractor\\semanticFeature\\demolist.txt";
+			fistream = new FileInputStream(allImageFileList);
+			br = new BufferedReader(new InputStreamReader(fistream));
+			String strLine;
+			int lineno = 0;
+			while ((strLine = br.readLine()) != null)   {
+			    if (strLine.contains(filepath)){
+			    	result[i] = lineno;
+			    }
+			    lineno ++;
+			}
+			br.close();
+			
+		}
+		return result;
+		
+	}
 	public static <K, V extends Comparable<? super V>> Map<K, V> crunchifySortMap(final Map<K, V> mapToSort) {
 		List<Map.Entry<K, V>> entries = new ArrayList<Map.Entry<K, V>>(mapToSort.size());
  
@@ -172,15 +197,14 @@ public class TagsMatch {
 	public static String[] stemmedKeywords(String[] keywords){
 		return stemTerms(keywords);
 	}
-	public static HashMap<Integer, Double> mergeResult(String[] docs, HashMap<Integer, Double> result, double idf){
+	public static HashMap<Integer, Double> mergeResult(int[] docs, HashMap<Integer, Double> result, double idf){
 		for (int i = 0; i < docs.length; i ++) {
-			int num = Integer.parseInt(docs[i]);
-			if (!result.containsKey(num)){
-				result.put(num, idf);
+			if (!result.containsKey(docs[i])){
+				result.put(docs[i], idf);
 			}
 			else {
-				double d = result.get(num)+idf;
-				result.put(num, d);
+				double d = result.get(docs[i])+idf;
+				result.put(docs[i], d);
 			}
 		}
 		return result;
