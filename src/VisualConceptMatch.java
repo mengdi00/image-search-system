@@ -102,7 +102,7 @@ public class VisualConceptMatch {
     	return imgs;
     	
     }
-	public HashMap<Integer, Double> getSearchResult(){
+	public HashMap<Integer, Double> getSearchResults(){
 		return searchResults;
 	}
 	public static <K, V extends Comparable<? super V>> Map<K, V> crunchifySortMap(final Map<K, V> mapToSort) {

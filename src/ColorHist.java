@@ -13,7 +13,7 @@ import javax.imageio.ImageIO;
 
 public class ColorHist {
 	int dim = 64;
-
+	HashMap<Integer,Double> searchResult = new HashMap<Integer,Double>();
 	
 	public BufferedImage[] search(String datasetpath, String queryImagePath, int resultsize) throws IOException{
     	File queryImage = new File(queryImagePath);
@@ -34,7 +34,7 @@ public class ColorHist {
 		datasetFiles.toArray(files);
 		double[] sims = new double [files.length];
 		int [] indexes = new int [files.length];
-		HashMap<Integer,Double> searchResult = new HashMap<Integer,Double>();
+		
 		/*ranking the search results*/
 		for (int count=0; count < files.length;count++){
 			BufferedImage i = ImageIO.read(files[count]);
@@ -81,6 +81,10 @@ public class ColorHist {
 		}
     	return imgs;
     }
+	
+	public HashMap<Integer,Double> getSearchResults(){
+		return searchResult;
+	}
 	
 	public double[] getHist(BufferedImage image) {
 		int imHeight = image.getHeight();

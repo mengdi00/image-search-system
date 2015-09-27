@@ -1,4 +1,12 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -16,7 +24,7 @@ public class ImageSearch extends JFrame
 	JPanel checkBoxPanel = new JPanel(new GridLayout(0,2));
 	JPanel QIP = new JPanel();
 	
-	int resultsize = 20;    //size of the searching result
+	static int resultsize = 20;    //size of the searching result
 	String datasetpath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\"; //the path of image dataset
     ColorHist colorhist = new ColorHist();
 	VisualConceptMatch vc = new VisualConceptMatch();
@@ -25,7 +33,8 @@ public class ImageSearch extends JFrame
     JButton openButton, searchButton;
     JCheckBox CHButton, VWButton, VCButton, TextButton;
 	BufferedImage bufferedimage;
-    
+	HashMap<Integer,Double> finalResult = new HashMap<Integer,Double>();
+    double VWWeight,VCWeight,CHWeight,TextWeight;
 	JLabel [] imageLabels = new JLabel [ resultsize ];
 	
 	File file = null;
@@ -144,7 +153,10 @@ public class ImageSearch extends JFrame
 
         fc.setSelectedFile(null);
         }else if (e.getSource() == searchButton) {
-        	
+        	VWWeight = 0.2;
+            VCWeight = 0.3;
+            CHWeight = 0.1;
+            TextWeight = 0.4;
         	BufferedImage [] imgs = null;
         	if(VWButton.isSelected()){
         		try {
@@ -153,6 +165,11 @@ public class ImageSearch extends JFrame
         				// TODO Auto-generated catch block
         				e1.printStackTrace();
         		}
+        		HashMap<Integer,Double> VWMap = VisualWordsMatch.getSearchResults();
+        		for(int i=0; i<VWMap.size(); i++){
+        			finalResult.put(i, (finalResult.get(i)+(VWMap.get(i)*VWWeight)));
+        		}
+        		
         	}if(VCButton.isSelected()){
         		try {
 					imgs = vc.search(datasetpath, file.getAbsolutePath(), resultsize);
@@ -160,6 +177,11 @@ public class ImageSearch extends JFrame
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+        		HashMap<Integer,Double> VCMap = vc.getSearchResults();
+        		for(int i=0; i<VCMap.size(); i++){
+        			finalResult.put(i, finalResult.get(i)+(VCMap.get(i)*VCWeight));
+        		}
+        		
         	}if(CHButton.isSelected()){
         		try {
         			imgs = colorhist.search (datasetpath, file.getAbsolutePath(), resultsize);
@@ -167,6 +189,12 @@ public class ImageSearch extends JFrame
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+        		HashMap<Integer,Double> CHMap = colorhist.getSearchResults();
+        		System.out.println(CHMap.size());
+        		for(int i=0; i<CHMap.size(); i++){
+        			finalResult.put(i, finalResult.get(i)+(CHMap.get(i)*CHWeight));
+        		}
+        		
         	}if(TextButton.isSelected()){
         		try {
         			imgs = text.search (datasetpath, file.getAbsolutePath(), resultsize);
@@ -174,12 +202,25 @@ public class ImageSearch extends JFrame
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+        		HashMap<Integer,Double> TextMap = text.getSearchResults();
+        		for(int i=0; i<TextMap.size(); i++){
+        			finalResult.put(i, finalResult.get(i)+(TextMap.get(i)*TextWeight));
+        		}
         	}
         	
         	if(!TextButton.isSelected() && !CHButton.isSelected()
         			&& !VCButton.isSelected() && !VWButton.isSelected()){
         		System.out.println("Please Tell Me What To Do");
         	}
+        	
+        	ArrayList<Integer> result = getRankedDocs(finalResult);
+
+        	try {
+				imgs = returnResult(result);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
         	
 			for(int i = 0; i<imageLabels.length;i++)
 				imageLabels[i].setIcon(new ImageIcon(imgs[i]));
@@ -188,7 +229,59 @@ public class ImageSearch extends JFrame
     }
 
     public static void main(String[] args) throws IOException {
-    	
 		ImageSearch example = new ImageSearch();
+    }
+    
+    public static <K, V extends Comparable<? super V>> Map<K, V> crunchifySortMap(final Map<K, V> mapToSort) {
+		List<Map.Entry<K, V>> entries = new ArrayList<Map.Entry<K, V>>(mapToSort.size());
+ 
+		entries.addAll(mapToSort.entrySet());
+ 
+		Collections.sort(entries, new Comparator<Map.Entry<K, V>>() {
+			@Override
+			public int compare(final Map.Entry<K, V> entry1, final Map.Entry<K, V> entry2) {
+				return entry1.getValue().compareTo(entry2.getValue());
+			}
+		});
+ 
+		Map<K, V> sortedCrunchifyMap = new LinkedHashMap<K, V>();
+		for (Map.Entry<K, V> entry : entries) {
+			sortedCrunchifyMap.put(entry.getKey(), entry.getValue());
+		}
+		return sortedCrunchifyMap;
+	}
+    
+    public static ArrayList<Integer> getRankedDocs(HashMap<Integer, Double> searchResults){
+		ArrayList<Integer> rankedDocs = new ArrayList<Integer>();
+        Map<Integer, Double> sortedCrunchifyMapValue = new HashMap<Integer, Double>();
+		
+		// Sort Map on value by calling crunchifySortMap()
+		sortedCrunchifyMapValue = crunchifySortMap(searchResults);
+		for (Entry<Integer, Double> entry : sortedCrunchifyMapValue.entrySet()) {
+			rankedDocs.add(entry.getKey());
+		}
+		
+	    Collections.reverse(rankedDocs); //decreasing order
+
+	    return rankedDocs;   
+	}
+    
+    public BufferedImage[] returnResult(ArrayList<Integer> result) throws IOException{
+    	BufferedImage[] imgs = new BufferedImage[resultsize];
+    	FileInputStream fistream = new FileInputStream("image_indexes_train");
+    	BufferedReader br = new BufferedReader(new InputStreamReader(fistream));
+    	ArrayList<String> Database = new ArrayList<String>();
+    	String strLine = "";
+    	while((strLine = br.readLine()) != null){
+    		Database.add(strLine);
+    	}
+    	br.close();
+    	
+    	for(int i=0; i<resultsize; i++){
+    		int FileNo = result.get(i);
+    		String Path = Database.get(FileNo);
+    		imgs[i] = ImageIO.read(new File(Path));
+    	}
+    	return imgs;
     }
 }

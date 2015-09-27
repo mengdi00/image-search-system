@@ -24,7 +24,7 @@ import javax.imageio.ImageIO;
 
 public class TagsMatch {
 	static String[] fileList;
-	static HashMap<Integer, Float> searchResults;
+	static HashMap<Integer, Double> searchResults;
 	public static final String projectFolderPath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\";
 	public BufferedImage[] search(String datasetpath, String queryImagePath, int resultsize) throws Exception{
 		
@@ -51,7 +51,7 @@ public class TagsMatch {
 		keywords = stemmedKeywords(keywords);
 		int N = fileList.length;		
 		
-		searchResults = new HashMap<Integer, Float>();//doc-score
+		searchResults = new HashMap<Integer, Double>();//doc-score
 		
 		fistream = new FileInputStream("index.txt");
     	br = new BufferedReader(new InputStreamReader(fistream));
@@ -65,7 +65,7 @@ public class TagsMatch {
 					String[] docs = strLine.split("->")[1].split(" ");
 					//assume tf=1 for all keyword in each file, use idf to represent the weight
 					int df = Integer.parseInt(strLine.split("->")[0].split(" ")[1]);
-					float idf = (float) (Math.log((float)N/df)+1);
+					double idf = (double) (Math.log((double)N/df)+1);
 					searchResults = mergeResult(docs,searchResults,idf);//save the doc numbers and add idf
 					break; // stop reading and check the next query word
 				}
@@ -102,7 +102,7 @@ public class TagsMatch {
 		}
 		return images;
 	}
-	public HashMap<Integer, Float> getSearchResult(){
+	public HashMap<Integer, Double> getSearchResults(){
 		return searchResults;
 	}
 	public static <K, V extends Comparable<? super V>> Map<K, V> crunchifySortMap(final Map<K, V> mapToSort) {
@@ -123,13 +123,13 @@ public class TagsMatch {
 		}
 		return sortedCrunchifyMap;
 	}
-	public static ArrayList<Integer> getRankedDocs(HashMap<Integer, Float> searchResults){
+	public static ArrayList<Integer> getRankedDocs(HashMap<Integer, Double> searchResults){
 		ArrayList<Integer> rankedDocs = new ArrayList<Integer>();
-        Map<Integer, Float> sortedCrunchifyMapValue = new HashMap<Integer, Float>();
+        Map<Integer, Double> sortedCrunchifyMapValue = new HashMap<Integer, Double>();
 		
 		// Sort Map on value by calling crunchifySortMap()
 		sortedCrunchifyMapValue = crunchifySortMap(searchResults);
-		for (Entry<Integer, Float> entry : sortedCrunchifyMapValue.entrySet()) {
+		for (Entry<Integer, Double> entry : sortedCrunchifyMapValue.entrySet()) {
 			rankedDocs.add(entry.getKey());
 		}
 		
@@ -160,7 +160,7 @@ public class TagsMatch {
 	public static String[] stemmedKeywords(String[] keywords){
 		return stemTerms(keywords);
 	}
-	public static HashMap<Integer, Float> mergeResult(String[] docs, HashMap<Integer, Float> result, float idf){
+	public static HashMap<Integer, Double> mergeResult(String[] docs, HashMap<Integer, Double> result, double idf){
 		for (int i = 0; i < docs.length; i ++) {
 			int num = Integer.parseInt(docs[i]);
 			if (!result.containsKey(num)){
