@@ -13,7 +13,7 @@ public class ImageSearch extends JFrame
                               implements ActionListener {
     JFileChooser fc;
 	JPanel contentPane;
-	JPanel checkBoxPanel = new JPanel(new GridLayout(0,1));
+	JPanel checkBoxPanel = new JPanel(new GridLayout(0,2));
 	JPanel QIP = new JPanel();
 	
 	int resultsize = 20;    //size of the searching result
@@ -65,7 +65,7 @@ public class ImageSearch extends JFrame
         checkBoxPanel.add(TextButton);
         
         buttonPanel.add(searchButton);
-        buttonPanel.add(Box.createHorizontalStrut(50));
+        buttonPanel.add(Box.createHorizontalStrut(80));
         buttonPanel.add(checkBoxPanel,BorderLayout.PAGE_END);
         
 		
@@ -81,7 +81,7 @@ public class ImageSearch extends JFrame
         }
 
 		contentPane = (JPanel)this.getContentPane();
-		setSize(500,500);
+		setSize(700,700);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
         contentPane.add(buttonPanel,BorderLayout.SOUTH);
