@@ -17,10 +17,12 @@ public class ImageSearch extends JFrame
 	JPanel QIP = new JPanel();
 	
 	int resultsize = 20;    //size of the searching result
-	String datasetpath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\"; //the path of image dataset
+	String CHdatasetpath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\"; //the path of image dataset
+	String datasetpath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\ImageData\\train\\data";
     ColorHist colorhist = new ColorHist();
 	VisualConceptMatch vc = new VisualConceptMatch();
 	VisualWordsMatch vw = new VisualWordsMatch();
+	TagsMatch text = new TagsMatch();
     JButton openButton, searchButton;
     JCheckBox CHButton, VWButton, VCButton, TextButton;
 	BufferedImage bufferedimage;
@@ -144,20 +146,36 @@ public class ImageSearch extends JFrame
         fc.setSelectedFile(null);
         }else if (e.getSource() == searchButton) {
         	
-        	try {
-				bufferedimage = ImageIO.read(file);
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
         	BufferedImage [] imgs = null;
-			try {
-				imgs = colorhist.search (datasetpath, bufferedimage, resultsize);
-				//imgs = vw.search(datasetpath, file.getAbsolutePath(), resultsize);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+        	if(VWButton.isSelected()){
+        		try {
+        			imgs = vw.search(datasetpath, file.getAbsolutePath(), resultsize);
+        		} catch (Exception e1) {
+        				// TODO Auto-generated catch block
+        				e1.printStackTrace();
+        		}
+        	}else if(VCButton.isSelected()){
+        		try {
+					imgs = vc.search(datasetpath, file.getAbsolutePath(), resultsize);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+        	}else if(CHButton.isSelected()){
+        		try {
+        			imgs = colorhist.search (datasetpath, bufferedimage, resultsize);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+        	}else if(TextButton.isSelected()){
+        		try {
+        			imgs = text.search (datasetpath, file.getAbsolutePath(), resultsize);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+        	}
         	
 			for(int i = 0; i<imageLabels.length;i++)
 				imageLabels[i].setIcon(new ImageIcon(imgs[i]));

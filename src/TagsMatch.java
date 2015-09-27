@@ -148,7 +148,7 @@ public class TagsMatch {
 				result.put(num, idf);
 			}
 			else {
-				result.replace(num, result.get(num)+idf);
+				result.put(num, result.get(num)+idf);
 			}
 		}
 		return result;
