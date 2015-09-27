@@ -23,7 +23,7 @@ public class ColorHist {
         ArrayList<File> datasetFiles = new ArrayList<File>();
 		
     	FileInputStream fistream = new FileInputStream(datasetpath+"FeatureExtractor\\semanticFeature\\demolist.txt");
-    	BufferedReader br = new BufferedReader(new InputStreamReader(fistream));
+    	BufferedReader br = new BufferedReader(new InputStreamReader(fistream)); //read database
     	String strLine;
     	while((strLine = br.readLine()) != null){
     		File file = new File(strLine);
@@ -34,8 +34,7 @@ public class ColorHist {
 		datasetFiles.toArray(files);
 		double[] sims = new double [files.length];
 		int [] indexes = new int [files.length];
-		
-		
+		HashMap<Integer,Double> searchResult = new HashMap<Integer,Double>();
 		/*ranking the search results*/
 		for (int count=0; count < files.length;count++){
 			BufferedImage i = ImageIO.read(files[count]);
@@ -44,9 +43,11 @@ public class ColorHist {
 			if (count == 0){
 				sims[count] = sim;
 				indexes [count] = count;
+				searchResult.put(count, sim);
 			}
 			else {
 				int index;
+				searchResult.put(count, sim);
 				for (index =0; index < count; index ++){
 					if (sim > sims[index])
 						break;
