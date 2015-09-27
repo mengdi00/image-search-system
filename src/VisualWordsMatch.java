@@ -27,10 +27,10 @@ import org.python.util.PythonInterpreter;
 
 public class VisualWordsMatch {
 	
-	public static final String projectFolderPath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\";
+	public static final String projectFolderPath = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\";
 	public static String[] fileList;
 	public static ArrayList<String> categories;
-	public static String SIFTResultPath = "C:\\Users\\Rithel\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image";
+	public static String SIFTResultPath = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image";
 	
 	public static void SIFTGenerator(String QPath) throws IOException{
 		
@@ -38,9 +38,9 @@ public class VisualWordsMatch {
 		
 		ProcessBuilder pb = new ProcessBuilder(
 				"C:\\tools\\python2-x86_32\\python",
-				"C:\\Users\\Rithel\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image\\generate.py",
+				"C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image\\generate.py",
 				"-c",
-				"C:\\Users\\Rithel\\Desktop\\CS2108\\Assignment1\\ImageData\\train\\data\\codebook_b.file",
+				"C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\ImageData\\train\\data\\codebook_b.file",
 				QPath);
 
 		pb.directory(new File(SIFTResultPath));
@@ -68,11 +68,16 @@ public class VisualWordsMatch {
     	String strLine = "";
     	double[] Data = new double[temp.length];
     	HashMap<Integer, Double> similarityHashMap = new HashMap<Integer,Double>();
-    	int index = 0;
+    	int fileno = 0;
     	while((strLine = br.readLine()) != null){
-    		imageFileList.add(strLine.split(" ")[0]);
-    		Data[index++] = Double.parseDouble(strLine.split(" ")[index].split(":")[1]);
-    		similarityHashMap.put(index,MeasureSimilarity.cosSimilarity(QueryData,Data));
+    		
+    		String[] d = strLine.split(" ");
+    		imageFileList.add(d[0]);
+    		for (int i = 0; i < d.length - 1; i ++){
+    			Data[i] = Double.parseDouble(d[i+1]);
+    		}	
+    		similarityHashMap.put(fileno,MeasureSimilarity.cosSimilarity(QueryData,Data));
+    		fileno++;
     	}
     	br.close();
     	
