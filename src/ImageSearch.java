@@ -13,9 +13,11 @@ public class ImageSearch extends JFrame
                               implements ActionListener {
     JFileChooser fc;
 	JPanel contentPane;
-
+	JPanel checkBoxPanel = new JPanel(new GridLayout(0,1));
+	JPanel QIP = new JPanel();
+	
 	int resultsize = 20;    //size of the searching result
-	String datasetpath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\ImageData\\train\\data\\dog"; //the path of image dataset
+	String datasetpath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\"; //the path of image dataset
     ColorHist colorhist = new ColorHist();
 	VisualConceptMatch vc = new VisualConceptMatch();
 	VisualWordsMatch vw = new VisualWordsMatch();
@@ -28,7 +30,7 @@ public class ImageSearch extends JFrame
 	File file = null;
 
 
-    public ImageSearch() {
+    public ImageSearch() throws IOException {
         
         openButton = new JButton("Select an image...",
                 createImageIcon("images/Open16.gif"));
@@ -53,16 +55,24 @@ public class ImageSearch extends JFrame
         //For layout purposes, put the buttons in a separate panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); //use FlowLayout
         buttonPanel.add(openButton);
-        JPanel checkBoxPanel = new JPanel(new GridLayout(0,1));
+        
         checkBoxPanel.add(CHButton);
+
         checkBoxPanel.add(VWButton);
+
         checkBoxPanel.add(VCButton);
+
         checkBoxPanel.add(TextButton);
+        
         buttonPanel.add(searchButton);
+        buttonPanel.add(Box.createHorizontalStrut(50));
+        buttonPanel.add(checkBoxPanel,BorderLayout.PAGE_END);
         
 		
+        
     	JPanel imagePanel = new JPanel();
         imagePanel.setLayout(new GridLayout(0,5));
+        
         
         for (int i = 0; i<imageLabels.length;i++){
         	imageLabels[i] = new JLabel();
@@ -74,9 +84,9 @@ public class ImageSearch extends JFrame
 		setSize(500,500);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-        contentPane.add(buttonPanel,BorderLayout.PAGE_END);
+        contentPane.add(buttonPanel,BorderLayout.SOUTH);
         contentPane.add(imagePanel, BorderLayout.CENTER);
-        contentPane.add(checkBoxPanel,BorderLayout.NORTH);
+        //contentPane.add(checkBoxPanel,BorderLayout.NORTH);
         
         contentPane.setVisible(true);
 		setVisible(true);
@@ -121,7 +131,14 @@ public class ImageSearch extends JFrame
         //Process the results.
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             file = fc.getSelectedFile();
-
+            JLabel QI = new JLabel();
+    		try {
+				QI.setIcon(new ImageIcon(ImageIO.read(new File(file.getAbsolutePath()))));
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+            QIP.add(QI,BorderLayout.BEFORE_FIRST_LINE);
         }
 
         fc.setSelectedFile(null);
@@ -148,7 +165,7 @@ public class ImageSearch extends JFrame
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
     	
 		ImageSearch example = new ImageSearch();
     }

@@ -1,4 +1,4 @@
-import org.math.array.LinearAlgebra;
+
 
 public class MeasureSimilarity {
     public static double cosSimilarity(double[] queryScores, double[] datasetScores){
