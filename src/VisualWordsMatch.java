@@ -55,9 +55,9 @@ public class VisualWordsMatch {
 		FileInputStream fistream = new FileInputStream(SIFTResultPath + "\\visual_words_for_test_data");
     	BufferedReader br = new BufferedReader(new InputStreamReader(fistream));
     	String[] temp = br.readLine().split(" ");
-    	String QueryData = "";
-    	for(int i=0; i<temp.length-1; i++){
-    		QueryData += temp[i].split(":")[1] + " ";
+    	double[] QueryData = new double[temp.length];
+    	for(int i=0; i<temp.length; i++){
+    		QueryData[i] = Double.parseDouble(temp[i].split(":")[1]);
     	}
     	br.close();
     	
@@ -65,13 +65,14 @@ public class VisualWordsMatch {
     	fistream = new FileInputStream("indexVW.txt");
     	br = new BufferedReader(new InputStreamReader(fistream));
     	ArrayList<String> imageFileList = new ArrayList<String>();
-    	String strLine;
+    	String strLine = "";
+    	double[] Data = new double[temp.length];
     	HashMap<Integer, Double> similarityHashMap = new HashMap<Integer,Double>();
     	int index = 0;
     	while((strLine = br.readLine()) != null){
     		imageFileList.add(strLine.split(" ")[0]);
-    		similarityHashMap.put(index,cosSimilarity(QueryData,strLine));
-    		index ++;
+    		Data[index++] = Double.parseDouble(strLine.split(" ")[index].split(":")[1]);
+    		similarityHashMap.put(index,MeasureSimilarity.cosSimilarity(QueryData,Data));
     	}
     	br.close();
     	
