@@ -81,10 +81,25 @@ public class VisualWordsMatch {
     	
     	//rank the result docs, and return resultsize many of the docs
     	ArrayList<Integer> result = getRankedDocs(similarityHashMap);
+    	HashMap<String, Integer> countCategories = new HashMap<String, Integer>();
     	BufferedImage[] imgs = new BufferedImage[resultsize];
 		for (int i = 0; i < resultsize; i ++){
 			String path = projectFolderPath+"ImageData\\train\\data\\"+fileList[result.get(i)];
+			File resultimage = new File(path);
+			String f = resultimage.getParentFile().getName();
+			if(countCategories.containsKey(f)){
+				countCategories.put(f, countCategories.get(f)+1);
+			}
+			else {
+				countCategories.put(f, 1);
+			}
 			imgs [i]=ImageIO.read(new File(path));
+		}
+		File queryImage = new File(queryPath);
+		System.out.println("Query Image Categories: "+queryImage.getParentFile().getName());
+		System.out.println("Search Result categories:");
+		for (String s:countCategories.keySet()){
+			System.out.println(s+":"+countCategories.get(s));
 		}
     	return imgs;
     	
