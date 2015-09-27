@@ -1,7 +1,23 @@
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.imageio.ImageIO;
 
 import org.python.core.PyInteger;
 import org.python.core.PyObject;
@@ -11,63 +27,172 @@ import org.python.util.PythonInterpreter;
 
 public class VisualWordsMatch {
 	
-	public static void main(String a[]) throws IOException{
-		
-		String queryPath = "";
-		SIFTGenerator();
-		SolveQuery(queryPath);
-		outputResult();
+	public static final String projectFolderPath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\";
+	public static String[] fileList;
+	public static ArrayList<String> categories;
+	public static String SIFTResultPath = "C:\\Users\\Rithel\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image";
 	
+	public static void SIFTGenerator(String QPath) throws IOException{
+		createImageListFile();
+		
+		
+		ProcessBuilder pb = new ProcessBuilder(
+				"C:\\tools\\python2-x86_32\\python",
+				"C:\\Users\\Rithel\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image\\generate.py",
+				"-c",
+				"C:\\Users\\Rithel\\Desktop\\CS2108\\Assignment1\\ImageData\\train\\data\\codebook_b.file",
+				QPath);
+
+		pb.directory(new File(SIFTResultPath));
+
+		Process process = pb.start();		
 	}
 	
-	public static void SIFTGenerator() throws IOException{
-
-		ProcessBuilder pb = new ProcessBuilder("D:\\lab\\singapore\\course\\Y4semester1\\CS2108\\Assignments\\Assignment1\\Assignment1\\FeatureExtractor\\semanticFeature\\image_classification.exe","D:\\lab\\singapore\\course\\Y4semester1\\CS2108\\Assignments\\Assignment1\\Assignment1\\FeatureExtractor\\semanticFeature\\demolist.txt");
-
-		pb.directory(new File("D:\\lab\\singapore\\course\\Y4semester1\\CS2108\\Assignments\\Assignment1\\Assignment1\\FeatureExtractor\\semanticFeature"));
-
-		Process process = pb.start();
-
-//		PythonInterpreter py = new PythonInterpreter();
-//		String ABPath1 = "D:\\lab\\singapore\\course\\Y4semester1\\CS2108\\Assignments\\Assignment1\\Assignment1\\ImageData\\train\\data\\codebook_b.file";
-//		//String MDPath1 = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\ImageData\\train\\data\\codebook_b.file";
-//		String ABPath2 = "D:\\lab\\singapore\\course\\Y4semester1\\CS2108\\Assignments\\Assignment1\\Assignment1\\ImageData\\test\\data\\bear\\0018_375723120.jpg";
-//		//String MDPath2 = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\ImageData\\test\\data\\bear\\0087_2173846805.jpg";
-//
-//		//String MDpythonScriptPath = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\"
-//		//		+ "Bag-of-Visual-Words-Image\\Bag-of-Visual-Words-Image\\generate.py";
-//		String ABpythonScriptPath = "D:\\lab\\singapore\\course\\Y4semester1\\CS2108\\Assignments\\Assignment1\\Bag-of-Visual-Words-Image";
-//		String[] cmd = new String[5];
-//		cmd[0] = "C:\\tools\\python2-x86_32\\python";
-//		cmd[1] = ABpythonScriptPath + "\\generate.py";
-//		cmd[2] = "-c";
-//		cmd[3] = ABPath1;
-//		cmd[4] = ABPath2;
-//		
-//		String pyCommand = "";
-//		
-//		for(int i=0; i<5; i++){
-//			pyCommand += cmd[i] + " ";
-//		}
-//
-//		File f = new File(ABpythonScriptPath);
-//		System.out.println(f.getAbsolutePath());
-//		//System.out.println(pyCommand);
-//		//py.exec(pyCommand);
-//		//py.close();
-//		
-//		Runtime.getRuntime().exec(cmd);
-//		
-		System.out.println("done");
+		public static void SolveQuery(String queryPath) {
+		}
 		
-		
-		//python.execfile("C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image\\Bag-of-Visual-Words-Image\\learn.py");
+		public static void outputResult(){
+			
+		}
+	
+	public BufferedImage[] search(String datasetpath, String queryPath, int resultsize) throws Exception{		
+		//exe alr puts results in queryimagename.txt in its folder, read the result
+		SIFTGenerator(queryPath);
+		FileInputStream fistream = new FileInputStream(SIFTResultPath + "\\visual_words_for_test_data");
+    	BufferedReader br = new BufferedReader(new InputStreamReader(fistream));
+    	String[] temp = br.readLine().split(" ");
+    	String QueryData = "";
+    	for(int i=0; i<temp.length-1; i++){
+    		QueryData += temp[i].split(":")[1] + " ";
+    	}
+    	br.close();
+    	
+    	//read indexVC.txt and get similarities
+    	fistream = new FileInputStream("indexVW.txt");
+    	br = new BufferedReader(new InputStreamReader(fistream));
+    	ArrayList<String> imageFileList = new ArrayList<String>();
+    	String strLine;
+    	HashMap<Integer, Double> similarityHashMap = new HashMap<Integer,Double>();
+    	int index = 0;
+    	while((strLine = br.readLine()) != null){
+    		imageFileList.add(strLine.split(" ")[0]);
+    		similarityHashMap.put(index,cosSimilarity(QueryData,strLine));
+    		index ++;
+    	}
+    	br.close();
+    	
+    	fileList = new String[imageFileList.size()];
+    	imageFileList.toArray(fileList);
+    	
+    	//rank the result docs, and return resultsize many of the docs
+    	ArrayList<Integer> result = getRankedDocs(similarityHashMap);
+    	BufferedImage[] imgs = new BufferedImage[resultsize];
+		for (int i = 0; i < resultsize; i ++){
+			String path = projectFolderPath+"ImageData\\train\\data\\"+fileList[result.get(i)];
+			imgs [i]=ImageIO.read(new File(path));
+		}
+    	return imgs;
+    	
+    }
+	
+	public static double cosSimilarity(String query, String datasetImage){
+		String[] queryScores = query.split(" ");
+		String[] dsImageScores = datasetImage.split(" ");
+		double lengthOfQ = 0, lengthOfD = 0;
+		double dotproduct = 0;
+		for (int i = 0; i < queryScores.length; i ++){
+			double q = Double.parseDouble(queryScores[i]);
+			double d = Double.parseDouble(dsImageScores[i + 1]);
+			lengthOfQ += q*q;
+			lengthOfD += d*d;
+			dotproduct += q*d;
+		}
+		double dist = dotproduct/(double)Math.sqrt(lengthOfQ*lengthOfD);
+		return dist;
 	}
 	
-	public static void SolveQuery(String queryPath) {
+	public static ArrayList<Integer> getRankedDocs(HashMap<Integer, Double> similarityHashMap){
+		ArrayList<Integer> rankedDocs = new ArrayList<Integer>();
+        Map<Integer, Double> sortedCrunchifyMapValue = new HashMap<Integer, Double>();
+		
+		// Sort Map on value by calling crunchifySortMap()
+		sortedCrunchifyMapValue = crunchifySortMap(similarityHashMap);
+		for (Entry<Integer, Double> entry : sortedCrunchifyMapValue.entrySet()) {
+			rankedDocs.add(entry.getKey());
+		}
+		
+	    Collections.reverse(rankedDocs); //decreasing order
+
+	    return rankedDocs;
+	    
 	}
 	
-	public static void outputResult(){
+	public static <K, V extends Comparable<? super V>> Map<K, V> crunchifySortMap(final Map<K, V> mapToSort) {
+		List<Map.Entry<K, V>> entries = new ArrayList<Map.Entry<K, V>>(mapToSort.size());
+ 
+		entries.addAll(mapToSort.entrySet());
+ 
+		Collections.sort(entries, new Comparator<Map.Entry<K, V>>() {
+			@Override
+			public int compare(final Map.Entry<K, V> entry1, final Map.Entry<K, V> entry2) {
+				return entry1.getValue().compareTo(entry2.getValue());
+			}
+		});
+ 
+		Map<K, V> sortedCrunchifyMap = new LinkedHashMap<K, V>();
+		for (Map.Entry<K, V> entry : entries) {
+			sortedCrunchifyMap.put(entry.getKey(), entry.getValue());
+		}
+		return sortedCrunchifyMap;
+	}
+	
+	public static void indexAllFileResults() throws Exception{
+		FileOutputStream fostream = new FileOutputStream("indexVW.txt");    		  
+		Writer writer = new BufferedWriter(new OutputStreamWriter(fostream, "utf-8"));
+		FileInputStream fistream = new FileInputStream("visual_words_for_training_data");
+		BufferedReader br = new BufferedReader(new InputStreamReader(fistream));
 		
+		for (int i = 0; i < categories.size(); i++){
+  		  	File dir = new File(projectFolderPath+"ImageData\\train\\data\\"+categories.get(i));
+  		  	for (File file : dir.listFiles()) {
+  		  		String strLine;
+  				if(file.getName().endsWith(".jpg"))
+  					writer.write(categories.get(i)+"\\"+file.getName()+" ");
+  				while((strLine = br.readLine()) != null){
+  					String[] splitedStrLine = strLine.split(" ");
+  					for(int j=0; j<splitedStrLine.length; j++){
+  						double data = Double.parseDouble(splitedStrLine[j].split(":")[1]);
+  						writer.write(data+" ");
+  					}
+  					writer.write("\n");
+  					break;
+  				}
+  		  	}
+  		}
+		br.close();
+		writer.close();	
+	}
+	
+	public static void createImageListFile() throws IOException{
+		ArrayList<String> filenames = new ArrayList<String>();
+		FileInputStream fistream = new FileInputStream(projectFolderPath+"ImageData\\category_names.txt");
+    	BufferedReader br = new BufferedReader(new InputStreamReader(fistream));
+    	String strLine;
+    	
+    	categories = new ArrayList<String>();
+    	while((strLine = br.readLine()) != null){
+    		categories.add(strLine);
+    	}
+    	br.close();
+    	for (int i = 0; i < categories.size(); i ++){
+    		  File dir = new File(projectFolderPath+"ImageData\\train\\data\\"+categories.get(i));
+    		  for (File file : dir.listFiles()) {
+    		    if (file.getName().endsWith((".jpg"))) {
+    		      filenames.add(categories.get(i)+"\\"+file.getName());
+    		    }
+    		  }
+    	}
+
 	}
 }
+

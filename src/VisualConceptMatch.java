@@ -25,7 +25,7 @@ import javax.imageio.ImageIO;
 
 
 public class VisualConceptMatch {
-	public static final String projectFolderPath = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\";
+	public static final String projectFolderPath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\";
 	public static String[] fileList;
 	public static ArrayList<String> categories;
 	public static void main(String a[]) throws Exception{

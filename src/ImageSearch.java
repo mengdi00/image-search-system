@@ -14,10 +14,11 @@ public class ImageSearch extends JFrame
     JFileChooser fc;
 	JPanel contentPane;
 
-	int resultsize = 9;    //size of the searching result
-	String datasetpath = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\ImageData\\train\\data\\dog"; //the path of image dataset
+	int resultsize = 20;    //size of the searching result
+	String datasetpath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\ImageData\\train\\data\\dog"; //the path of image dataset
     //ColorHist colorhist = new ColorHist();
 	VisualConceptMatch vc = new VisualConceptMatch();
+	VisualWordsMatch vw = new VisualWordsMatch();
     JButton openButton, searchButton;
     JCheckBox CHButton, VWButton, VCButton, TextButton;
 	BufferedImage bufferedimage;
@@ -61,17 +62,18 @@ public class ImageSearch extends JFrame
         
 		
     	JPanel imagePanel = new JPanel();
-        imagePanel.setLayout(new GridLayout(0,3));
+        imagePanel.setLayout(new GridLayout(0,5));
         
         for (int i = 0; i<imageLabels.length;i++){
         	imageLabels[i] = new JLabel();
+        	imageLabels[i].setSize(5, 5);
         	imagePanel.add(imageLabels[i]);
         }
 
 		contentPane = (JPanel)this.getContentPane();
-		setSize(800,900);
+		setSize(500,500);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+		
         contentPane.add(buttonPanel,BorderLayout.PAGE_END);
         contentPane.add(imagePanel, BorderLayout.CENTER);
         contentPane.add(checkBoxPanel,BorderLayout.NORTH);
@@ -134,7 +136,7 @@ public class ImageSearch extends JFrame
         	BufferedImage [] imgs = null;
 			try {
 				//imgs = colorhist.search (datasetpath, bufferedimage, resultsize);
-				imgs = vc.search(datasetpath, file.getAbsolutePath(), resultsize);
+				imgs = vw.search(datasetpath, file.getAbsolutePath(), resultsize);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -142,7 +144,7 @@ public class ImageSearch extends JFrame
         	
 			for(int i = 0; i<imageLabels.length;i++)
 				imageLabels[i].setIcon(new ImageIcon(imgs[i]));
-        	
+				
         }
     }
 
