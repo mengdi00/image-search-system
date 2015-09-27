@@ -155,9 +155,9 @@ public class ImageSearch extends JFrame
         fc.setSelectedFile(null);
         }else if (e.getSource() == searchButton) {
         	VWWeight = 0.2;
-            VCWeight = 0.3;
-            CHWeight = 0.1;
-            TextWeight = 0.4;
+            VCWeight = 0.25;
+            CHWeight = 0.05;
+            TextWeight = 0.5;
         	BufferedImage [] imgs = null;
         	
         	if(VWButton.isSelected()){
