@@ -33,8 +33,8 @@ public class VisualWordsMatch {
 	public static String SIFTResultPath = "C:\\Users\\Rithel\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image";
 	
 	public static void SIFTGenerator(String QPath) throws IOException{
-		createImageListFile();
 		
+		createImageListFile();
 		
 		ProcessBuilder pb = new ProcessBuilder(
 				"C:\\tools\\python2-x86_32\\python",
