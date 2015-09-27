@@ -165,7 +165,6 @@ public class ImageSearch extends JFrame
         		HashMap<Integer, Double> VWMap = new HashMap<Integer,Double>();
 				try {
 					VWMap = VisualWordsMatch.search(datasetpath, file.getAbsolutePath(), resultsize);
-					System.out.println(file.getAbsolutePath());
 					for(Integer key: VWMap.keySet()){
 						if(finalResult.get(key) != null){
 							double newScore = finalResult.get(key) + VWMap.get(key)*VWWeight;
