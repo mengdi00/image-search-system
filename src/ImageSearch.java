@@ -17,8 +17,7 @@ public class ImageSearch extends JFrame
 	JPanel QIP = new JPanel();
 	
 	int resultsize = 20;    //size of the searching result
-	String CHdatasetpath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\"; //the path of image dataset
-	String datasetpath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\ImageData\\train\\data";
+	String datasetpath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\"; //the path of image dataset
     ColorHist colorhist = new ColorHist();
 	VisualConceptMatch vc = new VisualConceptMatch();
 	VisualWordsMatch vw = new VisualWordsMatch();
@@ -163,7 +162,7 @@ public class ImageSearch extends JFrame
 				}
         	}if(CHButton.isSelected()){
         		try {
-        			imgs = colorhist.search (CHdatasetpath, file.getAbsolutePath(), resultsize);
+        			imgs = colorhist.search (datasetpath, file.getAbsolutePath(), resultsize);
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
