@@ -16,7 +16,7 @@ public class ImageSearch extends JFrame
 
 	int resultsize = 20;    //size of the searching result
 	String datasetpath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\ImageData\\train\\data\\dog"; //the path of image dataset
-    //ColorHist colorhist = new ColorHist();
+    ColorHist colorhist = new ColorHist();
 	VisualConceptMatch vc = new VisualConceptMatch();
 	VisualWordsMatch vw = new VisualWordsMatch();
     JButton openButton, searchButton;
@@ -135,8 +135,8 @@ public class ImageSearch extends JFrame
 			}
         	BufferedImage [] imgs = null;
 			try {
-				//imgs = colorhist.search (datasetpath, bufferedimage, resultsize);
-				imgs = vw.search(datasetpath, file.getAbsolutePath(), resultsize);
+				imgs = colorhist.search (datasetpath, bufferedimage, resultsize);
+				//imgs = vw.search(datasetpath, file.getAbsolutePath(), resultsize);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

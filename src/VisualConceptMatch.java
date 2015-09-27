@@ -54,11 +54,21 @@ public class VisualConceptMatch {
     	br = new BufferedReader(new InputStreamReader(fistream));
     	ArrayList<String> imageFileList = new ArrayList<String>();
     	String strLine;
-    	HashMap<Integer,Float> similarityHashMap = new HashMap<Integer,Float>();
+    	HashMap<Integer,Double> similarityHashMap = new HashMap<Integer,Double>();
     	int index = 0;
+    	String[] qData = queryImageData.split(" ");
+    	double[] queryScores = new double[qData.length];
+    	for (int i = 0; i < qData.length; i ++){
+    		queryScores[i] = Double.parseDouble(qData[i]);
+    	}
     	while((strLine = br.readLine()) != null){
     		imageFileList.add(strLine.split(" ")[0]);
-    		similarityHashMap.put(index,cosSimilarity(queryImageData,strLine));
+    		String[] dData = strLine.split(" ");
+    		double[] datasetScores = new double[dData.length];
+        	for (int i = 1; i < dData.length; i ++){
+        		datasetScores[i] = Double.parseDouble(dData[i]);
+        	}
+    		similarityHashMap.put(index,MeasureSimilarity.simBhattacharyyaDistance(queryScores,datasetScores));//calculateMahalanobis(queryScores,datasetScores));//cosSimilarity(queryScores,datasetScores));
     		index ++;
     	}
     	br.close();
@@ -76,21 +86,6 @@ public class VisualConceptMatch {
     	return imgs;
     	
     }
-	public static float cosSimilarity(String query, String datasetImage){
-		String[] queryScores = query.split(" ");
-		String[] dsImageScores = datasetImage.split(" ");
-		float lengthOfQ = 0, lengthOfD = 0;
-		float dotproduct = 0;
-		for (int i = 0; i < queryScores.length; i ++){
-			float q = Float.parseFloat(queryScores[i]);
-			float d = Float.parseFloat(dsImageScores[i + 1]);
-			lengthOfQ += q*q;
-			lengthOfD += d*d;
-			dotproduct += q*d;
-		}
-		float dist = dotproduct/(float)Math.sqrt(lengthOfQ*lengthOfD);
-		return dist;
-	}
 	public static <K, V extends Comparable<? super V>> Map<K, V> crunchifySortMap(final Map<K, V> mapToSort) {
 		List<Map.Entry<K, V>> entries = new ArrayList<Map.Entry<K, V>>(mapToSort.size());
  
@@ -109,13 +104,13 @@ public class VisualConceptMatch {
 		}
 		return sortedCrunchifyMap;
 	}
-	public static ArrayList<Integer> getRankedDocs(HashMap<Integer, Float> searchResults){
+	public static ArrayList<Integer> getRankedDocs(HashMap<Integer, Double> searchResults){
 		ArrayList<Integer> rankedDocs = new ArrayList<Integer>();
-        Map<Integer, Float> sortedCrunchifyMapValue = new HashMap<Integer, Float>();
+        Map<Integer, Double> sortedCrunchifyMapValue = new HashMap<Integer, Double>();
 		
 		// Sort Map on value by calling crunchifySortMap()
 		sortedCrunchifyMapValue = crunchifySortMap(searchResults);
-		for (Entry<Integer, Float> entry : sortedCrunchifyMapValue.entrySet()) {
+		for (Entry<Integer, Double> entry : sortedCrunchifyMapValue.entrySet()) {
 			rankedDocs.add(entry.getKey());
 		}
 		

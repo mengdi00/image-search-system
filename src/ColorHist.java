@@ -1,8 +1,11 @@
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -14,26 +17,16 @@ public class ColorHist {
 	public BufferedImage[] search(String datasetpath, BufferedImage bufferedimage, int resultsize) throws IOException{
     	double[] hist = getHist(bufferedimage);
     	
-    	ArrayList<File> datasetFiles = new ArrayList<File>();
-    	File dir = new File(datasetpath); //path of the dataset
-		String[] directories = dir.list(new FilenameFilter() {//all the subfolders
-			  @Override
-			  public boolean accept(File current, String name) {
-			    return new File(current, name).isDirectory();
-			  }
-	    });
-		for (int i = 0; i < directories.length; i ++){ //all the image files in each subfolders
-			File folder = new File(datasetpath+directories[i]);
-			File[] listOfFiles = folder.listFiles(); 
-			 
-			for (int j = 0; j < listOfFiles.length; j ++) {
-				if (listOfFiles[j].getName().endsWith(".jpg")){
-					File file = new File(listOfFiles[j].getAbsolutePath());
-					datasetFiles.add(file);
-				}
-			}
-		}		
-	
+        ArrayList<File> datasetFiles = new ArrayList<File>();
+		
+    	FileInputStream fistream = new FileInputStream(datasetpath+"FeatureExtractor\\semanticFeature\\demolist.txt");
+    	BufferedReader br = new BufferedReader(new InputStreamReader(fistream));
+    	String strLine;
+    	while((strLine = br.readLine()) != null){
+    		File file = new File(strLine);
+    		datasetFiles.add(file);
+    	}
+    	br.close();
 		File [] files = new File[datasetFiles.size()];
 		datasetFiles.toArray(files);
 		double[] sims = new double [files.length];
@@ -42,32 +35,26 @@ public class ColorHist {
 		
 		/*ranking the search results*/
 		for (int count=0; count < files.length;count++){
-			System.out.println(files[count]);
-			try{
-				BufferedImage i = ImageIO.read(files[count]);
-				double[] h = getHist(i);
-				double sim = computeSimilarity (hist, h);
-				if (count == 0){
-					sims[count] = sim;
-					indexes [count] = count;
-				}
-				else {
-					int index;
-					for (index =0; index < count; index ++){
-						if (sim > sims[index])
-							break;
-					}
-					for (int j = count - 1; j > index - 1; j--){
-						sims [j+1] = sims [j];
-						indexes [j+1] = indexes[j];
-					}
-					sims[index] = sim;
-					indexes[index] = count;
-				}
+			BufferedImage i = ImageIO.read(files[count]);
+			double[] h = getHist(i);
+			double sim = MeasureSimilarity.cosSimilarity (hist, h);
+			if (count == 0){
+				sims[count] = sim;
+				indexes [count] = count;
 			}
-			catch(Exception e){
-				System.out.println(e.getMessage());
-			}	
+			else {
+				int index;
+				for (index =0; index < count; index ++){
+					if (sim > sims[index])
+						break;
+				}
+				for (int j = count - 1; j > index - 1; j--){
+					sims [j+1] = sims [j];
+					indexes [j+1] = indexes[j];
+				}
+				sims[index] = sim;
+				indexes[index] = count;
+			}
 		}
 		    	
     	BufferedImage[] imgs = new BufferedImage[resultsize];
@@ -77,12 +64,6 @@ public class ColorHist {
 		
     	return imgs;
     }
-    
-    public double computeSimilarity(double [] hist1, double [] hist2) {
-		
-		double distance = calculateDistance(hist1, hist2);
-		return 1-distance;
-	}
 	
 	public double[] getHist(BufferedImage image) {
 		int imHeight = image.getHeight();
@@ -120,31 +101,4 @@ public class ColorHist {
         
         return bins;
 	}
-	
-	public double calculateDistance(double[] array1, double[] array2)
-    {
-		// Euclidean distance
-        /*double Sum = 0.0;
-        for(int i = 0; i < array1.length; i++) {
-           Sum = Sum + Math.pow((array1[i]-array2[i]),2.0);
-        }
-        return Math.sqrt(Sum);
-        */
-        
-        // Bhattacharyya distance
-		double h1 = 0.0;
-		double h2 = 0.0;
-		int N = array1.length;
-        for(int i = 0; i < N; i++) {
-        	h1 = h1 + array1[i];
-        	h2 = h2 + array2[i];
-        }
-
-        double Sum = 0.0;
-        for(int i = 0; i < N; i++) {
-           Sum = Sum + Math.sqrt(array1[i]*array2[i]);
-        }
-        double dist = Math.sqrt( 1 - Sum / Math.sqrt(h1*h2));
-        return dist;
-    }
 }
