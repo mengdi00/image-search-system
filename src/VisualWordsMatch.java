@@ -48,12 +48,6 @@ public class VisualWordsMatch {
 		Process process = pb.start();		
 	}
 	
-		public static void SolveQuery(String queryPath) {
-		}
-		
-		public static void outputResult(){
-			
-		}
 	
 	public BufferedImage[] search(String datasetpath, String queryPath, int resultsize) throws Exception{		
 		//exe alr puts results in queryimagename.txt in its folder, read the result
