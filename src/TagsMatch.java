@@ -85,6 +85,7 @@ public class TagsMatch {
 			}
 		}
 		br.close();
+		System.out.println(searchResults.size());
 		return searchResults;
 //		ArrayList<Integer> rankedDocs = getRankedDocs(searchResults); //rank docs by its idf
 //		
@@ -179,13 +180,14 @@ public class TagsMatch {
 				result.put(num, idf);
 			}
 			else {
-				result.put(num, result.get(num)+idf);
+				double d = result.get(num)+idf;
+				result.put(num, d);
 			}
 		}
 		return result;
 	}
 	public static void index() throws Exception{
-		separateTerms();
+		separateTerms(); 
 		sortTerms();
 		buildLinkedList();
 	}

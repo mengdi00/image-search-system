@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -215,15 +216,16 @@ public class ImageSearch extends JFrame
         		
         	}if(TextButton.isSelected()){
         		HashMap<Integer, Double> TextMap = new HashMap<Integer,Double>();
+        		
 				try {
 					TextMap = text.search(datasetpath, file.getAbsolutePath(), resultsize);
-					for(int i=0; i<TextMap.size(); i++){
-						if(finalResult.get(i) != null){
-							double newScore = finalResult.get(i) + TextMap.get(i)*CHWeight;
-		        			finalResult.put(i, newScore);
+					for(Integer key: TextMap.keySet()){
+						if(finalResult.get(key) != null){
+							double newScore = finalResult.get(key) + TextMap.get(key)*CHWeight;
+		        			finalResult.put(key, newScore);
 						}
 						else
-							finalResult.put(i, TextMap.get(i)*CHWeight);
+							finalResult.put(key, TextMap.get(key)*CHWeight);
 	        		}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
