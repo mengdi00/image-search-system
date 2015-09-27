@@ -40,7 +40,7 @@ public class ColorHist {
 		for (int count=0; count < files.length;count++){
 			BufferedImage i = ImageIO.read(files[count]);
 			double[] h = getHist(i);
-			double sim = MeasureSimilarity.cosSimilarity (hist, h);
+			double sim = MeasureSimilarity.simBhattacharyyaDistance(hist, h);
 			if (count == 0){
 				sims[count] = sim;
 				indexes [count] = count;
