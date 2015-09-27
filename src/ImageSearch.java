@@ -164,13 +164,13 @@ public class ImageSearch extends JFrame
         		HashMap<Integer, Double> VWMap = new HashMap<Integer,Double>();
 				try {
 					VWMap = VisualWordsMatch.search(datasetpath, file.getAbsolutePath(), resultsize);
-					for(int i=0; i<VWMap.size(); i++){
-						if(finalResult.get(i) != null){
-							double newScore = finalResult.get(i) + VWMap.get(i)*CHWeight;
-		        			finalResult.put(i, newScore);
-							}
-							else
-								finalResult.put(i, VWMap.get(i)*CHWeight);
+					for(Integer key: VWMap.keySet()){
+						if(finalResult.get(key) != null){
+							double newScore = finalResult.get(key) + VWMap.get(key)*CHWeight;
+		        			finalResult.put(key, newScore);
+						}
+						else
+							finalResult.put(key, VWMap.get(key)*CHWeight);
 	        		}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -182,13 +182,13 @@ public class ImageSearch extends JFrame
         		HashMap<Integer, Double> VCMap = new HashMap<Integer,Double>();
 				try {
 					VCMap = vc.search(datasetpath, file.getAbsolutePath(), resultsize);
-					for(int i=0; i<VCMap.size(); i++){
-						if(finalResult.get(i) != null){
-							double newScore = finalResult.get(i) + VCMap.get(i)*CHWeight;
-							finalResult.put(i, newScore);
+					for(Integer key: VCMap.keySet()){
+						if(finalResult.get(key) != null){
+							double newScore = finalResult.get(key) + VCMap.get(key)*CHWeight;
+		        			finalResult.put(key, newScore);
 						}
-							else
-								finalResult.put(i, VCMap.get(i)*CHWeight);
+						else
+							finalResult.put(key, VCMap.get(key)*CHWeight);
 	        		}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -200,13 +200,13 @@ public class ImageSearch extends JFrame
         		HashMap<Integer, Double> CHMap = new HashMap<Integer,Double>();
 				try {
 					CHMap = colorhist.search(datasetpath, file.getAbsolutePath(), resultsize);
-					for(int i=0; i<CHMap.size(); i++){
-						if(finalResult.get(i) != null){
-							double newScore = finalResult.get(i) + CHMap.get(i)*CHWeight;
-							finalResult.put(i, newScore);
+					for(Integer key: CHMap.keySet()){
+						if(finalResult.get(key) != null){
+							double newScore = finalResult.get(key) + CHMap.get(key)*CHWeight;
+		        			finalResult.put(key, newScore);
 						}
 						else
-							finalResult.put(i, CHMap.get(i)*CHWeight);
+							finalResult.put(key, CHMap.get(key)*CHWeight);
 	        		}
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
@@ -216,7 +216,6 @@ public class ImageSearch extends JFrame
         		
         	}if(TextButton.isSelected()){
         		HashMap<Integer, Double> TextMap = new HashMap<Integer,Double>();
-        		
 				try {
 					TextMap = text.search(datasetpath, file.getAbsolutePath(), resultsize);
 					for(Integer key: TextMap.keySet()){

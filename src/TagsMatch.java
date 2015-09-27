@@ -85,7 +85,6 @@ public class TagsMatch {
 			}
 		}
 		br.close();
-		System.out.println(searchResults.size());
 		return searchResults;
 //		ArrayList<Integer> rankedDocs = getRankedDocs(searchResults); //rank docs by its idf
 //		
