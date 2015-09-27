@@ -24,6 +24,7 @@ import javax.imageio.ImageIO;
 
 public class TagsMatch {
 	static String[] fileList;
+	static HashMap<Integer, Float> searchResults;
 	public static final String projectFolderPath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\";
 	public BufferedImage[] search(String datasetpath, String queryImagePath, int resultsize) throws Exception{
 		
@@ -50,7 +51,7 @@ public class TagsMatch {
 		keywords = stemmedKeywords(keywords);
 		int N = fileList.length;		
 		
-		HashMap<Integer, Float> searchResults = new HashMap<Integer, Float>();//doc-score
+		searchResults = new HashMap<Integer, Float>();//doc-score
 		
 		fistream = new FileInputStream("index.txt");
     	br = new BufferedReader(new InputStreamReader(fistream));
@@ -100,6 +101,9 @@ public class TagsMatch {
 			System.out.println(s+":"+countCategories.get(s));
 		}
 		return images;
+	}
+	public HashMap<Integer, Float> getSearchResult(){
+		return searchResults;
 	}
 	public static <K, V extends Comparable<? super V>> Map<K, V> crunchifySortMap(final Map<K, V> mapToSort) {
 		List<Map.Entry<K, V>> entries = new ArrayList<Map.Entry<K, V>>(mapToSort.size());

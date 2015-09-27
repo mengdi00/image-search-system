@@ -31,6 +31,7 @@ public class VisualWordsMatch {
 	public static String[] fileList;
 	public static ArrayList<String> categories;
 	public static String SIFTResultPath = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image";
+	static HashMap<Integer, Double> searchResults;
 	
 	public static void SIFTGenerator(String QPath) throws IOException{
 		
@@ -67,7 +68,7 @@ public class VisualWordsMatch {
     	ArrayList<String> imageFileList = new ArrayList<String>();
     	String strLine = "";
     	double[] Data = new double[temp.length];
-    	HashMap<Integer, Double> similarityHashMap = new HashMap<Integer,Double>();
+    	searchResults = new HashMap<Integer,Double>();
     	int fileno = 0;
     	while((strLine = br.readLine()) != null){
     		
@@ -76,7 +77,7 @@ public class VisualWordsMatch {
     		for (int i = 0; i < d.length - 1; i ++){
     			Data[i] = Double.parseDouble(d[i+1]);
     		}	
-    		similarityHashMap.put(fileno,MeasureSimilarity.cosSimilarity(QueryData,Data));
+    		searchResults.put(fileno,MeasureSimilarity.cosSimilarity(QueryData,Data));
     		fileno++;
     	}
     	br.close();
@@ -85,7 +86,7 @@ public class VisualWordsMatch {
     	imageFileList.toArray(fileList);
     	
     	//rank the result docs, and return resultsize many of the docs
-    	ArrayList<Integer> result = getRankedDocs(similarityHashMap);
+    	ArrayList<Integer> result = getRankedDocs(searchResults);
     	HashMap<String, Integer> countCategories = new HashMap<String, Integer>();
     	BufferedImage[] imgs = new BufferedImage[resultsize];
 		for (int i = 0; i < resultsize; i ++){
@@ -109,6 +110,9 @@ public class VisualWordsMatch {
     	return imgs;
     	
     }
+	public static HashMap<Integer, Double> getSearchResults(){
+		return searchResults;
+	}
 	
 	public static double cosSimilarity(String query, String datasetImage){
 		String[] queryScores = query.split(" ");
@@ -126,12 +130,12 @@ public class VisualWordsMatch {
 		return dist;
 	}
 	
-	public static ArrayList<Integer> getRankedDocs(HashMap<Integer, Double> similarityHashMap){
+	public static ArrayList<Integer> getRankedDocs(HashMap<Integer, Double> searchResults){
 		ArrayList<Integer> rankedDocs = new ArrayList<Integer>();
         Map<Integer, Double> sortedCrunchifyMapValue = new HashMap<Integer, Double>();
 		
 		// Sort Map on value by calling crunchifySortMap()
-		sortedCrunchifyMapValue = crunchifySortMap(similarityHashMap);
+		sortedCrunchifyMapValue = crunchifySortMap(searchResults);
 		for (Entry<Integer, Double> entry : sortedCrunchifyMapValue.entrySet()) {
 			rankedDocs.add(entry.getKey());
 		}

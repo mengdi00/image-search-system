@@ -28,6 +28,7 @@ public class VisualConceptMatch {
 	public static final String projectFolderPath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\";
 	public static String[] fileList;
 	public static ArrayList<String> categories;
+	static HashMap<Integer, Double> searchResults;
 	public static void main(String a[]) throws Exception{
 		index();
 		//search();
@@ -54,7 +55,7 @@ public class VisualConceptMatch {
     	br = new BufferedReader(new InputStreamReader(fistream));
     	ArrayList<String> imageFileList = new ArrayList<String>();
     	String strLine;
-    	HashMap<Integer,Double> similarityHashMap = new HashMap<Integer,Double>();
+    	searchResults = new HashMap<Integer,Double>();
     	int index = 0;
     	String[] qData = queryImageData.split(" ");
     	double[] queryScores = new double[qData.length];
@@ -68,7 +69,7 @@ public class VisualConceptMatch {
         	for (int i = 1; i < dData.length; i ++){
         		datasetScores[i] = Double.parseDouble(dData[i]);
         	}
-    		similarityHashMap.put(index,MeasureSimilarity.cosSimilarity(queryScores,datasetScores));
+    		searchResults.put(index,MeasureSimilarity.cosSimilarity(queryScores,datasetScores));
     		index ++;
     	}
     	br.close();
@@ -77,7 +78,7 @@ public class VisualConceptMatch {
     	imageFileList.toArray(fileList);
     	
     	//rank the result docs, and return resultsize many of the docs
-    	ArrayList<Integer> result = getRankedDocs(similarityHashMap);
+    	ArrayList<Integer> result = getRankedDocs(searchResults);
     	HashMap<String, Integer> countCategories = new HashMap<String, Integer>();
     	BufferedImage[] imgs = new BufferedImage[resultsize];
 		for (int i = 0; i < resultsize; i ++){
@@ -101,6 +102,9 @@ public class VisualConceptMatch {
     	return imgs;
     	
     }
+	public HashMap<Integer, Double> getSearchResult(){
+		return searchResults;
+	}
 	public static <K, V extends Comparable<? super V>> Map<K, V> crunchifySortMap(final Map<K, V> mapToSort) {
 		List<Map.Entry<K, V>> entries = new ArrayList<Map.Entry<K, V>>(mapToSort.size());
  
