@@ -247,9 +247,9 @@ public class ImageSearch extends JFrame
 				e1.printStackTrace();
 			}
         	
-			for(int i = 0; i<imageLabels.length;i++)
-				imageLabels[i].setIcon(new ImageIcon(imgs[i]));
-				
+        	
+    		for(int i = 0; i<imageLabels.length;i++)
+    			imageLabels[i].setIcon(new ImageIcon(imgs[i]));
         }
     }
 
@@ -307,6 +307,31 @@ public class ImageSearch extends JFrame
     		imgs[i] = ImageIO.read(new File(Path));
     	}
     	
+    	PrintCategory(result,Database);
     	return imgs;
+    }
+    
+    public void PrintCategory(ArrayList<Integer> result, ArrayList<String> Database){
+    	HashMap<String, Integer> countCategories = new HashMap<String, Integer>();
+		for (int i = 0; i < resultsize; i ++){
+			String path = datasetpath+"ImageData\\train\\data\\"+Database.get(result.get(i));
+			File resultimage = new File(path);
+			String f = resultimage.getParentFile().getName();
+			if(countCategories.containsKey(f)){
+				countCategories.put(f, countCategories.get(f)+1);
+			}
+			else {
+				countCategories.put(f, 1);
+			}
+		}
+		
+    	File queryImage = new File(file.getAbsolutePath());
+		System.out.println("Query Image Categories: "+queryImage.getParentFile().getName());
+		System.out.println("Search Result categories:");
+		for (String s:countCategories.keySet()){
+			System.out.println(s+":"+countCategories.get(s));
+		}
+
+			
     }
 }
