@@ -158,19 +158,21 @@ public class ImageSearch extends JFrame
             VCWeight = 0.25;
             CHWeight = 0.05;
             TextWeight = 0.5;
+            finalResult = new HashMap<Integer,Double>();
         	BufferedImage [] imgs = null;
         	
         	if(VWButton.isSelected()){
         		HashMap<Integer, Double> VWMap = new HashMap<Integer,Double>();
 				try {
 					VWMap = VisualWordsMatch.search(datasetpath, file.getAbsolutePath(), resultsize);
+					System.out.println(file.getAbsolutePath());
 					for(Integer key: VWMap.keySet()){
 						if(finalResult.get(key) != null){
-							double newScore = finalResult.get(key) + VWMap.get(key)*CHWeight;
+							double newScore = finalResult.get(key) + VWMap.get(key)*VWWeight;
 		        			finalResult.put(key, newScore);
 						}
 						else
-							finalResult.put(key, VWMap.get(key)*CHWeight);
+							finalResult.put(key, VWMap.get(key)*VWWeight);
 	        		}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -184,11 +186,11 @@ public class ImageSearch extends JFrame
 					VCMap = vc.search(datasetpath, file.getAbsolutePath(), resultsize);
 					for(Integer key: VCMap.keySet()){
 						if(finalResult.get(key) != null){
-							double newScore = finalResult.get(key) + VCMap.get(key)*CHWeight;
+							double newScore = finalResult.get(key) + VCMap.get(key)*VCWeight;
 		        			finalResult.put(key, newScore);
 						}
 						else
-							finalResult.put(key, VCMap.get(key)*CHWeight);
+							finalResult.put(key, VCMap.get(key)*VCWeight);
 	        		}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -220,11 +222,11 @@ public class ImageSearch extends JFrame
 					TextMap = text.search(datasetpath, file.getAbsolutePath(), resultsize);
 					for(Integer key: TextMap.keySet()){
 						if(finalResult.get(key) != null){
-							double newScore = finalResult.get(key) + TextMap.get(key)*CHWeight;
+							double newScore = finalResult.get(key) + TextMap.get(key)*TextWeight;
 		        			finalResult.put(key, newScore);
 						}
 						else
-							finalResult.put(key, TextMap.get(key)*CHWeight);
+							finalResult.put(key, TextMap.get(key)*TextWeight);
 	        		}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -300,12 +302,12 @@ public class ImageSearch extends JFrame
     		Database.add(strLine);
     	}
     	br.close();
-    	
     	for(int i=0; i<resultsize; i++){
     		int FileNo = result.get(i);
     		String Path = Database.get(FileNo);
     		imgs[i] = ImageIO.read(new File(Path));
     	}
+    	
     	return imgs;
     }
 }

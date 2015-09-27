@@ -39,9 +39,9 @@ public class VisualWordsMatch {
 		
 		ProcessBuilder pb = new ProcessBuilder(
 				"C:\\tools\\python2-x86_32\\python",
-				"C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image\\generate.py",
+				"C:\\Users\\richada\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image\\generate.py",
 				"-c",
-				"C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\ImageData\\train\\data\\codebook_b.file",
+				"C:\\Users\\richada\\Desktop\\CS2108\\Assignment1\\ImageData\\train\\data\\codebook_b.file",
 				QPath);
 
 		pb.directory(new File(SIFTResultPath));
