@@ -15,7 +15,7 @@ public class ColorHist {
 	int dim = 64;
 	HashMap<Integer,Double> searchResult = new HashMap<Integer,Double>();
 	
-	public BufferedImage[] search(String datasetpath, String queryImagePath, int resultsize) throws IOException{
+	public HashMap<Integer,Double> search(String datasetpath, String queryImagePath, int resultsize) throws IOException{
     	File queryImage = new File(queryImagePath);
 		BufferedImage bufferedimage = ImageIO.read(queryImage);
 		double[] hist = getHist(bufferedimage);
@@ -60,26 +60,27 @@ public class ColorHist {
 				indexes[index] = count;
 			}
 		}
-		    	
-    	BufferedImage[] imgs = new BufferedImage[resultsize];
-    	HashMap<String,Integer> countCategories = new HashMap<String, Integer>();
-		for (int i=0; i<resultsize;i++){
-			String f = files[indexes[i]].getParentFile().getName();
-			if(countCategories.containsKey(f)){
-				countCategories.put(f, countCategories.get(f)+1);
-			}
-			else {
-				countCategories.put(f, 1);
-			}
-			
-			imgs [i]=ImageIO.read(files[indexes[i]]);
-		}
-		System.out.println("Query Image Categories: "+queryImage.getParentFile().getName());
-		System.out.println("Search Result categories:");
-		for (String s:countCategories.keySet()){
-			System.out.println(s+":"+countCategories.get(s));
-		}
-    	return imgs;
+		   
+		return searchResult;
+//    	BufferedImage[] imgs = new BufferedImage[resultsize];
+//    	HashMap<String,Integer> countCategories = new HashMap<String, Integer>();
+//		for (int i=0; i<resultsize;i++){
+//			String f = files[indexes[i]].getParentFile().getName();
+//			if(countCategories.containsKey(f)){
+//				countCategories.put(f, countCategories.get(f)+1);
+//			}
+//			else {
+//				countCategories.put(f, 1);
+//			}
+//			
+//			imgs [i]=ImageIO.read(files[indexes[i]]);
+//		}
+//		System.out.println("Query Image Categories: "+queryImage.getParentFile().getName());
+//		System.out.println("Search Result categories:");
+//		for (String s:countCategories.keySet()){
+//			System.out.println(s+":"+countCategories.get(s));
+//		}
+//    	return imgs;
     }
 	
 	public HashMap<Integer,Double> getSearchResults(){

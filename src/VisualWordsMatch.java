@@ -27,10 +27,10 @@ import org.python.util.PythonInterpreter;
 
 public class VisualWordsMatch {
 	
-	public static final String projectFolderPath = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\";
+	public static final String projectFolderPath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\";
 	public static String[] fileList;
 	public static ArrayList<String> categories;
-	public static String SIFTResultPath = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image";
+	public static String SIFTResultPath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image";
 	static HashMap<Integer, Double> searchResults;
 	
 	public static void SIFTGenerator(String QPath) throws IOException{
@@ -50,7 +50,7 @@ public class VisualWordsMatch {
 	}
 	
 	
-	public BufferedImage[] search(String datasetpath, String queryPath, int resultsize) throws Exception{		
+	public static HashMap<Integer,Double> search(String datasetpath, String queryPath, int resultsize) throws Exception{		
 		//exe alr puts results in queryimagename.txt in its folder, read the result
 		SIFTGenerator(queryPath);
 		FileInputStream fistream = new FileInputStream(SIFTResultPath + "\\visual_words_for_test_data");
@@ -81,33 +81,33 @@ public class VisualWordsMatch {
     		fileno++;
     	}
     	br.close();
-    	
-    	fileList = new String[imageFileList.size()];
-    	imageFileList.toArray(fileList);
-    	
-    	//rank the result docs, and return resultsize many of the docs
-    	ArrayList<Integer> result = getRankedDocs(searchResults);
-    	HashMap<String, Integer> countCategories = new HashMap<String, Integer>();
-    	BufferedImage[] imgs = new BufferedImage[resultsize];
-		for (int i = 0; i < resultsize; i ++){
-			String path = projectFolderPath+"ImageData\\train\\data\\"+fileList[result.get(i)];
-			File resultimage = new File(path);
-			String f = resultimage.getParentFile().getName();
-			if(countCategories.containsKey(f)){
-				countCategories.put(f, countCategories.get(f)+1);
-			}
-			else {
-				countCategories.put(f, 1);
-			}
-			imgs [i]=ImageIO.read(new File(path));
-		}
-		File queryImage = new File(queryPath);
-		System.out.println("Query Image Categories: "+queryImage.getParentFile().getName());
-		System.out.println("Search Result categories:");
-		for (String s:countCategories.keySet()){
-			System.out.println(s+":"+countCategories.get(s));
-		}
-    	return imgs;
+    	return searchResults;
+//    	fileList = new String[imageFileList.size()];
+//    	imageFileList.toArray(fileList);
+//    	
+//    	//rank the result docs, and return resultsize many of the docs
+//    	ArrayList<Integer> result = getRankedDocs(searchResults);
+//    	HashMap<String, Integer> countCategories = new HashMap<String, Integer>();
+//    	BufferedImage[] imgs = new BufferedImage[resultsize];
+//		for (int i = 0; i < resultsize; i ++){
+//			String path = projectFolderPath+"ImageData\\train\\data\\"+fileList[result.get(i)];
+//			File resultimage = new File(path);
+//			String f = resultimage.getParentFile().getName();
+//			if(countCategories.containsKey(f)){
+//				countCategories.put(f, countCategories.get(f)+1);
+//			}
+//			else {
+//				countCategories.put(f, 1);
+//			}
+//			imgs [i]=ImageIO.read(new File(path));
+//		}
+//		File queryImage = new File(queryPath);
+//		System.out.println("Query Image Categories: "+queryImage.getParentFile().getName());
+//		System.out.println("Search Result categories:");
+//		for (String s:countCategories.keySet()){
+//			System.out.println(s+":"+countCategories.get(s));
+//		}
+//    	return imgs;
     	
     }
 	public static HashMap<Integer, Double> getSearchResults(){

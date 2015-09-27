@@ -158,54 +158,57 @@ public class ImageSearch extends JFrame
             CHWeight = 0.1;
             TextWeight = 0.4;
         	BufferedImage [] imgs = null;
+        	
         	if(VWButton.isSelected()){
-        		try {
-        			imgs = vw.search(datasetpath, file.getAbsolutePath(), resultsize);
-        		} catch (Exception e1) {
-        				// TODO Auto-generated catch block
-        				e1.printStackTrace();
-        		}
-        		HashMap<Integer,Double> VWMap = VisualWordsMatch.getSearchResults();
-        		for(int i=0; i<VWMap.size(); i++){
-        			finalResult.put(i, (finalResult.get(i)+(VWMap.get(i)*VWWeight)));
-        		}
-        		
-        	}if(VCButton.isSelected()){
-        		try {
-					imgs = vc.search(datasetpath, file.getAbsolutePath(), resultsize);
+        		HashMap<Integer, Double> VWMap;
+				try {
+					VWMap = VisualWordsMatch.search(datasetpath, file.getAbsolutePath(), resultsize);
+					for(int i=0; i<VWMap.size(); i++){
+	        			finalResult.put(i, (finalResult.get(i)+(VWMap.get(i)*VWWeight)));
+	        		}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-        		HashMap<Integer,Double> VCMap = vc.getSearchResults();
-        		for(int i=0; i<VCMap.size(); i++){
-        			finalResult.put(i, finalResult.get(i)+(VCMap.get(i)*VCWeight));
-        		}
+
+				
+        	}if(VCButton.isSelected()){
+        		HashMap<Integer, Double> VCMap;
+				try {
+					VCMap = vc.search(datasetpath, file.getAbsolutePath(), resultsize);
+					for(int i=0; i<VCMap.size(); i++){
+	        			finalResult.put(i, finalResult.get(i)+(VCMap.get(i)*VCWeight));
+	        		}
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+        		
         		
         	}if(CHButton.isSelected()){
-        		try {
-        			imgs = colorhist.search (datasetpath, file.getAbsolutePath(), resultsize);
-				} catch (Exception e1) {
+        		HashMap<Integer, Double> CHMap;
+				try {
+					CHMap = colorhist.search(datasetpath, file.getAbsolutePath(), resultsize);
+					for(int i=0; i<CHMap.size(); i++){
+	        			finalResult.put(i, finalResult.get(i)+(CHMap.get(i)*CHWeight));
+	        		}
+				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-        		HashMap<Integer,Double> CHMap = colorhist.getSearchResults();
-        		System.out.println(CHMap.size());
-        		for(int i=0; i<CHMap.size(); i++){
-        			finalResult.put(i, finalResult.get(i)+(CHMap.get(i)*CHWeight));
-        		}
+        		
         		
         	}if(TextButton.isSelected()){
-        		try {
-        			imgs = text.search (datasetpath, file.getAbsolutePath(), resultsize);
+        		HashMap<Integer, Double> TextMap;
+				try {
+					TextMap = text.search(datasetpath, file.getAbsolutePath(), resultsize);
+					for(int i=0; i<TextMap.size(); i++){
+	        			finalResult.put(i, finalResult.get(i)+(TextMap.get(i)*TextWeight));
+	        		}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}
-        		HashMap<Integer,Double> TextMap = text.getSearchResults();
-        		for(int i=0; i<TextMap.size(); i++){
-        			finalResult.put(i, finalResult.get(i)+(TextMap.get(i)*TextWeight));
-        		}
+				} 		
         	}
         	
         	if(!TextButton.isSelected() && !CHButton.isSelected()

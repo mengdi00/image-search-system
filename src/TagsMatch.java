@@ -26,14 +26,27 @@ public class TagsMatch {
 	static String[] fileList;
 	static HashMap<Integer, Double> searchResults;
 	public static final String projectFolderPath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\";
-	public BufferedImage[] search(String datasetpath, String queryImagePath, int resultsize) throws Exception{
-		
-		index();
+	
+	public HashMap<Integer, Double> search(String datasetpath, String queryImagePath, int resultsize) throws Exception{
+		//index();
+		ArrayList<String> imageList = new ArrayList<String>();
+		String trainTagsFile = projectFolderPath+"ImageData\\train\\train_tags.txt";
+		FileInputStream fistream = new FileInputStream(trainTagsFile);
+		BufferedReader br = new BufferedReader(new InputStreamReader(fistream));
+		String strLine;
+		while ((strLine = br.readLine()) != null)   {
+		    String[] tokens = strLine.split(" +");    		
+		    String imageName = tokens[0];
+		    imageList.add(imageName);
+		}
+		fileList = new String[imageList.size()];
+		imageList.toArray(fileList);
+		br.close();
 		
 		//go into the test folder and read test_tags.txt
-		FileInputStream fistream = new FileInputStream(queryImagePath.substring(0, queryImagePath.indexOf("data"))+"test_tags.txt");
-    	BufferedReader br = new BufferedReader(new InputStreamReader(fistream));
-    	String strLine;
+		fistream = new FileInputStream(queryImagePath.substring(0, queryImagePath.indexOf("data"))+"test_tags.txt");
+    	br = new BufferedReader(new InputStreamReader(fistream));
+    	
     	String sentence = null;
     	//if the file doesn't contain tags for query image, just return
     	//if it contains, then use the tags as keywords
@@ -72,35 +85,36 @@ public class TagsMatch {
 			}
 		}
 		br.close();
-		ArrayList<Integer> rankedDocs = getRankedDocs(searchResults); //rank docs by its idf
-		
-		String[] resultFiles = new String[rankedDocs.size()];
-		for (int i = 0; i < rankedDocs.size(); i ++){
-			resultFiles[i] = fileList[rankedDocs.get(i)];//get file names, doc num starts from 0
-		}
-		resultFiles = checkCategory(resultFiles);
-		
-		File queryImage = new File(queryImagePath);
-		
-		BufferedImage[] images = new BufferedImage[resultsize];
-		HashMap<String, Integer> countCategories = new HashMap<String, Integer>();
-		for (int i = 0; i < resultsize; i ++){
-			File result = new File(resultFiles[i]);
-			String f = result.getParentFile().getName();
-			if(countCategories.containsKey(f)){
-				countCategories.put(f, countCategories.get(f)+1);
-			}
-			else {
-				countCategories.put(f, 1);
-			}
-			images[i] = ImageIO.read(result);
-		}
-		System.out.println("Query Image Categories: "+queryImage.getParentFile().getName());
-		System.out.println("Search Result categories:");
-		for (String s:countCategories.keySet()){
-			System.out.println(s+":"+countCategories.get(s));
-		}
-		return images;
+		return searchResults;
+//		ArrayList<Integer> rankedDocs = getRankedDocs(searchResults); //rank docs by its idf
+//		
+//		String[] resultFiles = new String[rankedDocs.size()];
+//		for (int i = 0; i < rankedDocs.size(); i ++){
+//			resultFiles[i] = fileList[rankedDocs.get(i)];//get file names, doc num starts from 0
+//		}
+//		resultFiles = checkCategory(resultFiles);
+//		
+//		File queryImage = new File(queryImagePath);
+//		
+//		BufferedImage[] images = new BufferedImage[resultsize];
+//		HashMap<String, Integer> countCategories = new HashMap<String, Integer>();
+//		for (int i = 0; i < resultsize; i ++){
+//			File result = new File(resultFiles[i]);
+//			String f = result.getParentFile().getName();
+//			if(countCategories.containsKey(f)){
+//				countCategories.put(f, countCategories.get(f)+1);
+//			}
+//			else {
+//				countCategories.put(f, 1);
+//			}
+//			images[i] = ImageIO.read(result);
+//		}
+//		System.out.println("Query Image Categories: "+queryImage.getParentFile().getName());
+//		System.out.println("Search Result categories:");
+//		for (String s:countCategories.keySet()){
+//			System.out.println(s+":"+countCategories.get(s));
+//		}
+//		return images;
 	}
 	public HashMap<Integer, Double> getSearchResults(){
 		return searchResults;

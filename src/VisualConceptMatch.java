@@ -34,7 +34,7 @@ public class VisualConceptMatch {
 		//search();
 	
 	}
-	public BufferedImage[] search(String datasetpath, String queryImagePath, int resultsize) throws Exception{
+	public HashMap<Integer,Double> search(String datasetpath, String queryImagePath, int resultsize) throws Exception{
 		//write the query image path to searchlist.txt for image_classification.exe
 		String listFilePath = datasetpath+"FeatureExtractor\\semanticFeature\\searchlist.txt";
 		FileOutputStream fostream = new FileOutputStream(listFilePath);    		  
@@ -73,33 +73,33 @@ public class VisualConceptMatch {
     		index ++;
     	}
     	br.close();
-    	
-    	fileList = new String[imageFileList.size()];
-    	imageFileList.toArray(fileList);
-    	
-    	//rank the result docs, and return resultsize many of the docs
-    	ArrayList<Integer> result = getRankedDocs(searchResults);
-    	HashMap<String, Integer> countCategories = new HashMap<String, Integer>();
-    	BufferedImage[] imgs = new BufferedImage[resultsize];
-		for (int i = 0; i < resultsize; i ++){
-			String path = datasetpath+"ImageData\\train\\data\\"+fileList[result.get(i)];
-			File resultimage = new File(path);
-			String f = resultimage.getParentFile().getName();
-			if(countCategories.containsKey(f)){
-				countCategories.put(f, countCategories.get(f)+1);
-			}
-			else {
-				countCategories.put(f, 1);
-			}
-			imgs [i]=ImageIO.read(resultimage);
-		}
-		File queryImage = new File(queryImagePath);
-		System.out.println("Query Image Categories: "+queryImage.getParentFile().getName());
-		System.out.println("Search Result categories:");
-		for (String s:countCategories.keySet()){
-			System.out.println(s+":"+countCategories.get(s));
-		}
-    	return imgs;
+    	return searchResults;
+//    	fileList = new String[imageFileList.size()];
+//    	imageFileList.toArray(fileList);
+//    	
+//    	//rank the result docs, and return resultsize many of the docs
+//    	ArrayList<Integer> result = getRankedDocs(searchResults);
+//    	HashMap<String, Integer> countCategories = new HashMap<String, Integer>();
+//    	BufferedImage[] imgs = new BufferedImage[resultsize];
+//		for (int i = 0; i < resultsize; i ++){
+//			String path = datasetpath+"ImageData\\train\\data\\"+fileList[result.get(i)];
+//			File resultimage = new File(path);
+//			String f = resultimage.getParentFile().getName();
+//			if(countCategories.containsKey(f)){
+//				countCategories.put(f, countCategories.get(f)+1);
+//			}
+//			else {
+//				countCategories.put(f, 1);
+//			}
+//			imgs [i]=ImageIO.read(resultimage);
+//		}
+//		File queryImage = new File(queryImagePath);
+//		System.out.println("Query Image Categories: "+queryImage.getParentFile().getName());
+//		System.out.println("Search Result categories:");
+//		for (String s:countCategories.keySet()){
+//			System.out.println(s+":"+countCategories.get(s));
+//		}
+//    	return imgs;
     	
     }
 	public HashMap<Integer, Double> getSearchResults(){
@@ -174,29 +174,14 @@ public class VisualConceptMatch {
 	//run the exe file and output in console
 	public static void runClassificationExe(String filename) throws Exception{
 		String exe = projectFolderPath+"FeatureExtractor\\semanticFeature\\image_classification.exe";
-		try {
-		    String params[] = new String[]{
-		        exe,filename
-		    };
-		    ProcessBuilder pb = new ProcessBuilder(params);
-		    pb.directory(new File(projectFolderPath+"FeatureExtractor\\semanticFeature\\"));
-		    pb.redirectErrorStream();
-		    Process p = pb.start();
-		    InputStream is = p.getInputStream();
-		    int in = -1;
-		    while ((in = is.read()) != -1) {
-		        System.out.print((char) in);
-		    }
-		    is = p.getErrorStream();
-		    in = -1;
-		    while ((in = is.read()) != -1) {
-		        System.out.print((char) in);
-		    }
-		    System.out.println("p exited with " + p.exitValue());
-		} catch (IOException ex) {
-		    System.out.println("hello");
-		}
+		String params[] = new String[]{
+				exe,filename
+				};
+	    ProcessBuilder pb = new ProcessBuilder(params);
+		pb.directory(new File(projectFolderPath+"FeatureExtractor\\semanticFeature\\"));
+		Process p = pb.start();
 	}
+	
 	//put classification result for each doc in one file for indexing
 	public static void indexAllFileResults() throws Exception{
 		FileOutputStream fostream = new FileOutputStream("indexVC.txt");    		  
