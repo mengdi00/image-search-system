@@ -25,7 +25,7 @@ import javax.imageio.ImageIO;
 
 
 public class VisualConceptMatch {
-	public static final String projectFolderPath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\";
+	public static final String projectFolderPath = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\";
 	public static String[] fileList;
 	public static ArrayList<String> categories;
 	public static void main(String a[]) throws Exception{
@@ -35,7 +35,7 @@ public class VisualConceptMatch {
 	}
 	public BufferedImage[] search(String datasetpath, String queryImagePath, int resultsize) throws Exception{
 		//write the query image path to searchlist.txt for image_classification.exe
-		String listFilePath = projectFolderPath+"FeatureExtractor\\semanticFeature\\searchlist.txt";
+		String listFilePath = datasetpath+"FeatureExtractor\\semanticFeature\\searchlist.txt";
 		FileOutputStream fostream = new FileOutputStream(listFilePath);    		  
 		Writer writer = new BufferedWriter(new OutputStreamWriter(fostream, "utf-8"));
 		writer.write(queryImagePath);
@@ -68,7 +68,7 @@ public class VisualConceptMatch {
         	for (int i = 1; i < dData.length; i ++){
         		datasetScores[i] = Double.parseDouble(dData[i]);
         	}
-    		similarityHashMap.put(index,MeasureSimilarity.simBhattacharyyaDistance(queryScores,datasetScores));//calculateMahalanobis(queryScores,datasetScores));//cosSimilarity(queryScores,datasetScores));
+    		similarityHashMap.put(index,MeasureSimilarity.cosSimilarity(queryScores,datasetScores));
     		index ++;
     	}
     	br.close();
@@ -78,10 +78,25 @@ public class VisualConceptMatch {
     	
     	//rank the result docs, and return resultsize many of the docs
     	ArrayList<Integer> result = getRankedDocs(similarityHashMap);
+    	HashMap<String, Integer> countCategories = new HashMap<String, Integer>();
     	BufferedImage[] imgs = new BufferedImage[resultsize];
 		for (int i = 0; i < resultsize; i ++){
-			String path = projectFolderPath+"ImageData\\train\\data\\"+fileList[result.get(i)];
-			imgs [i]=ImageIO.read(new File(path));
+			String path = datasetpath+"ImageData\\train\\data\\"+fileList[result.get(i)];
+			File resultimage = new File(path);
+			String f = resultimage.getParentFile().getName();
+			if(countCategories.containsKey(f)){
+				countCategories.put(f, countCategories.get(f)+1);
+			}
+			else {
+				countCategories.put(f, 1);
+			}
+			imgs [i]=ImageIO.read(resultimage);
+		}
+		File queryImage = new File(queryImagePath);
+		System.out.println("Query Image Categories: "+queryImage.getParentFile().getName());
+		System.out.println("Search Result categories:");
+		for (String s:countCategories.keySet()){
+			System.out.println(s+":"+countCategories.get(s));
 		}
     	return imgs;
     	

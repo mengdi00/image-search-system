@@ -24,7 +24,7 @@ import javax.imageio.ImageIO;
 
 public class TagsMatch {
 	static String[] fileList;
-	public static final String projectFolderPath = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\";
+	public static final String projectFolderPath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\";
 	public BufferedImage[] search(String datasetpath, String queryImagePath, int resultsize) throws Exception{
 		
 		index();
@@ -79,10 +79,25 @@ public class TagsMatch {
 		}
 		resultFiles = checkCategory(resultFiles);
 		
+		File queryImage = new File(queryImagePath);
+		
 		BufferedImage[] images = new BufferedImage[resultsize];
+		HashMap<String, Integer> countCategories = new HashMap<String, Integer>();
 		for (int i = 0; i < resultsize; i ++){
-			System.out.println(resultFiles[i]);
-			images[i] = ImageIO.read(new File(resultFiles[i]));
+			File result = new File(resultFiles[i]);
+			String f = result.getParentFile().getName();
+			if(countCategories.containsKey(f)){
+				countCategories.put(f, countCategories.get(f)+1);
+			}
+			else {
+				countCategories.put(f, 1);
+			}
+			images[i] = ImageIO.read(result);
+		}
+		System.out.println("Query Image Categories: "+queryImage.getParentFile().getName());
+		System.out.println("Search Result categories:");
+		for (String s:countCategories.keySet()){
+			System.out.println(s+":"+countCategories.get(s));
 		}
 		return images;
 	}

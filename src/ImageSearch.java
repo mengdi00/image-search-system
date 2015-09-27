@@ -163,7 +163,7 @@ public class ImageSearch extends JFrame
 				}
         	}else if(CHButton.isSelected()){
         		try {
-        			imgs = colorhist.search (datasetpath, bufferedimage, resultsize);
+        			imgs = colorhist.search (CHdatasetpath, file.getAbsolutePath(), resultsize);
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

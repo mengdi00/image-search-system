@@ -7,6 +7,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
@@ -14,8 +15,10 @@ public class ColorHist {
 	int dim = 64;
 
 	
-	public BufferedImage[] search(String datasetpath, BufferedImage bufferedimage, int resultsize) throws IOException{
-    	double[] hist = getHist(bufferedimage);
+	public BufferedImage[] search(String datasetpath, String queryImagePath, int resultsize) throws IOException{
+    	File queryImage = new File(queryImagePath);
+		BufferedImage bufferedimage = ImageIO.read(queryImage);
+		double[] hist = getHist(bufferedimage);
     	
         ArrayList<File> datasetFiles = new ArrayList<File>();
 		
@@ -58,10 +61,23 @@ public class ColorHist {
 		}
 		    	
     	BufferedImage[] imgs = new BufferedImage[resultsize];
+    	HashMap<String,Integer> countCategories = new HashMap<String, Integer>();
 		for (int i=0; i<resultsize;i++){
+			String f = files[indexes[i]].getParentFile().getName();
+			if(countCategories.containsKey(f)){
+				countCategories.put(f, countCategories.get(f)+1);
+			}
+			else {
+				countCategories.put(f, 1);
+			}
+			
 			imgs [i]=ImageIO.read(files[indexes[i]]);
 		}
-		
+		System.out.println("Query Image Categories: "+queryImage.getParentFile().getName());
+		System.out.println("Search Result categories:");
+		for (String s:countCategories.keySet()){
+			System.out.println(s+":"+countCategories.get(s));
+		}
     	return imgs;
     }
 	
