@@ -25,7 +25,7 @@ import javax.imageio.ImageIO;
 public class TagsMatch {
 	static String[] fileList;
 	static HashMap<Integer, Double> searchResults;
-	public static final String projectFolderPath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\";
+	public static final String projectFolderPath = "C:\\Users\\richada\\Desktop\\CS2108\\Assignment1\\";
 	
 	public HashMap<Integer, Double> search(String datasetpath, String queryImagePath, int resultsize) throws Exception{
 		//index();
@@ -116,9 +116,7 @@ public class TagsMatch {
 //		}
 //		return images;
 	}
-	public HashMap<Integer, Double> getSearchResults(){
-		return searchResults;
-	}
+	
 	public static <K, V extends Comparable<? super V>> Map<K, V> crunchifySortMap(final Map<K, V> mapToSort) {
 		List<Map.Entry<K, V>> entries = new ArrayList<Map.Entry<K, V>>(mapToSort.size());
  

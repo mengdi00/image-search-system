@@ -27,10 +27,10 @@ import org.python.util.PythonInterpreter;
 
 public class VisualWordsMatch {
 	
-	public static final String projectFolderPath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\";
+	public static final String projectFolderPath = "C:\\Users\\richada\\Desktop\\CS2108\\Assignment1\\";
 	public static String[] fileList;
 	public static ArrayList<String> categories;
-	public static String SIFTResultPath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image";
+	public static String SIFTResultPath = "C:\\Users\\richada\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image";
 	static HashMap<Integer, Double> searchResults;
 	
 	public static void SIFTGenerator(String QPath) throws IOException{
@@ -39,9 +39,9 @@ public class VisualWordsMatch {
 		
 		ProcessBuilder pb = new ProcessBuilder(
 				"C:\\tools\\python2-x86_32\\python",
-				"C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image\\generate.py",
+				"C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\Bag-of-Visual-Words-Image\\generate.py",
 				"-c",
-				"C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment1\\ImageData\\train\\data\\codebook_b.file",
+				"C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\ImageData\\train\\data\\codebook_b.file",
 				QPath);
 
 		pb.directory(new File(SIFTResultPath));
@@ -110,9 +110,7 @@ public class VisualWordsMatch {
 //    	return imgs;
     	
     }
-	public static HashMap<Integer, Double> getSearchResults(){
-		return searchResults;
-	}
+
 	
 	public static double cosSimilarity(String query, String datasetImage){
 		String[] queryScores = query.split(" ");

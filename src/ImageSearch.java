@@ -25,7 +25,7 @@ public class ImageSearch extends JFrame
 	JPanel QIP = new JPanel();
 	
 	static int resultsize = 20;    //size of the searching result
-	String datasetpath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\"; //the path of image dataset
+	String datasetpath = "C:\\Users\\richada\\Desktop\\CS2108\\Assignment1\\"; //the path of image dataset
     ColorHist colorhist = new ColorHist();
 	VisualConceptMatch vc = new VisualConceptMatch();
 	VisualWordsMatch vw = new VisualWordsMatch();
@@ -160,11 +160,16 @@ public class ImageSearch extends JFrame
         	BufferedImage [] imgs = null;
         	
         	if(VWButton.isSelected()){
-        		HashMap<Integer, Double> VWMap;
+        		HashMap<Integer, Double> VWMap = new HashMap<Integer,Double>();
 				try {
 					VWMap = VisualWordsMatch.search(datasetpath, file.getAbsolutePath(), resultsize);
 					for(int i=0; i<VWMap.size(); i++){
-	        			finalResult.put(i, (finalResult.get(i)+(VWMap.get(i)*VWWeight)));
+						if(finalResult.get(i) != null){
+							double newScore = finalResult.get(i) + VWMap.get(i)*CHWeight;
+		        			finalResult.put(i, newScore);
+							}
+							else
+								finalResult.put(i, VWMap.get(i)*CHWeight);
 	        		}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -173,11 +178,16 @@ public class ImageSearch extends JFrame
 
 				
         	}if(VCButton.isSelected()){
-        		HashMap<Integer, Double> VCMap;
+        		HashMap<Integer, Double> VCMap = new HashMap<Integer,Double>();
 				try {
 					VCMap = vc.search(datasetpath, file.getAbsolutePath(), resultsize);
 					for(int i=0; i<VCMap.size(); i++){
-	        			finalResult.put(i, finalResult.get(i)+(VCMap.get(i)*VCWeight));
+						if(finalResult.get(i) != null){
+							double newScore = finalResult.get(i) + VCMap.get(i)*CHWeight;
+							finalResult.put(i, newScore);
+						}
+							else
+								finalResult.put(i, VCMap.get(i)*CHWeight);
 	        		}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -186,11 +196,16 @@ public class ImageSearch extends JFrame
         		
         		
         	}if(CHButton.isSelected()){
-        		HashMap<Integer, Double> CHMap;
+        		HashMap<Integer, Double> CHMap = new HashMap<Integer,Double>();
 				try {
 					CHMap = colorhist.search(datasetpath, file.getAbsolutePath(), resultsize);
 					for(int i=0; i<CHMap.size(); i++){
-	        			finalResult.put(i, finalResult.get(i)+(CHMap.get(i)*CHWeight));
+						if(finalResult.get(i) != null){
+							double newScore = finalResult.get(i) + CHMap.get(i)*CHWeight;
+							finalResult.put(i, newScore);
+						}
+						else
+							finalResult.put(i, CHMap.get(i)*CHWeight);
 	        		}
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
@@ -199,11 +214,16 @@ public class ImageSearch extends JFrame
         		
         		
         	}if(TextButton.isSelected()){
-        		HashMap<Integer, Double> TextMap;
+        		HashMap<Integer, Double> TextMap = new HashMap<Integer,Double>();
 				try {
 					TextMap = text.search(datasetpath, file.getAbsolutePath(), resultsize);
 					for(int i=0; i<TextMap.size(); i++){
-	        			finalResult.put(i, finalResult.get(i)+(TextMap.get(i)*TextWeight));
+						if(finalResult.get(i) != null){
+							double newScore = finalResult.get(i) + TextMap.get(i)*CHWeight;
+		        			finalResult.put(i, newScore);
+						}
+						else
+							finalResult.put(i, TextMap.get(i)*CHWeight);
 	        		}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -271,7 +291,7 @@ public class ImageSearch extends JFrame
     
     public BufferedImage[] returnResult(ArrayList<Integer> result) throws IOException{
     	BufferedImage[] imgs = new BufferedImage[resultsize];
-    	FileInputStream fistream = new FileInputStream("image_indexes_train");
+    	FileInputStream fistream = new FileInputStream(datasetpath+"FeatureExtractor\\semanticFeature\\demolist.txt");
     	BufferedReader br = new BufferedReader(new InputStreamReader(fistream));
     	ArrayList<String> Database = new ArrayList<String>();
     	String strLine = "";

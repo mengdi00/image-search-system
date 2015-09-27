@@ -83,9 +83,6 @@ public class ColorHist {
 //    	return imgs;
     }
 	
-	public HashMap<Integer,Double> getSearchResults(){
-		return searchResult;
-	}
 	
 	public double[] getHist(BufferedImage image) {
 		int imHeight = image.getHeight();

@@ -25,15 +25,12 @@ import javax.imageio.ImageIO;
 
 
 public class VisualConceptMatch {
-	public static final String projectFolderPath = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment1\\";
+	public static final String projectFolderPath = "C:\\Users\\richada\\Desktop\\CS2108\\Assignment1\\";
 	public static String[] fileList;
 	public static ArrayList<String> categories;
 	static HashMap<Integer, Double> searchResults;
-	public static void main(String a[]) throws Exception{
-		index();
-		//search();
+
 	
-	}
 	public HashMap<Integer,Double> search(String datasetpath, String queryImagePath, int resultsize) throws Exception{
 		//write the query image path to searchlist.txt for image_classification.exe
 		String listFilePath = datasetpath+"FeatureExtractor\\semanticFeature\\searchlist.txt";
@@ -102,9 +99,7 @@ public class VisualConceptMatch {
 //    	return imgs;
     	
     }
-	public HashMap<Integer, Double> getSearchResults(){
-		return searchResults;
-	}
+
 	public static <K, V extends Comparable<? super V>> Map<K, V> crunchifySortMap(final Map<K, V> mapToSort) {
 		List<Map.Entry<K, V>> entries = new ArrayList<Map.Entry<K, V>>(mapToSort.size());
  
