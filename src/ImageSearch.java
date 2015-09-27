@@ -154,27 +154,32 @@ public class ImageSearch extends JFrame
         				// TODO Auto-generated catch block
         				e1.printStackTrace();
         		}
-        	}else if(VCButton.isSelected()){
+        	}if(VCButton.isSelected()){
         		try {
 					imgs = vc.search(datasetpath, file.getAbsolutePath(), resultsize);
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-        	}else if(CHButton.isSelected()){
+        	}if(CHButton.isSelected()){
         		try {
         			imgs = colorhist.search (CHdatasetpath, file.getAbsolutePath(), resultsize);
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-        	}else if(TextButton.isSelected()){
+        	}if(TextButton.isSelected()){
         		try {
         			imgs = text.search (datasetpath, file.getAbsolutePath(), resultsize);
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+        	}
+        	
+        	if(!TextButton.isSelected() && !CHButton.isSelected()
+        			&& !VCButton.isSelected() && !VWButton.isSelected()){
+        		System.out.println("Please Tell Me What To Do");
         	}
         	
 			for(int i = 0; i<imageLabels.length;i++)
